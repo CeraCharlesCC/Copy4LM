@@ -329,7 +329,10 @@ def main() -> int:
         print("ERROR: LLM returned empty content.", file=sys.stderr)
         return 2
 
-    header_line = f"## [{args.new_tag}] - {dt.date.today().isoformat()}"
+    changelog_version = args.new_tag[1:] if args.new_tag.startswith("v") else args.new_tag
+    header_line = f"## [{changelog_version}] - {dt.date.today().isoformat()}"
+    # Ensure the produced header doesn't include a leading "v" before digits
+    content = re.sub(r"(?m)^##\s*\[\s*v(?=\d)", "## [", content, count=1)
     if not content.lstrip().startswith("## ["):
         content = f"{header_line}\n\n{content}"
     else:

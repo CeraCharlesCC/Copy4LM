@@ -227,8 +227,9 @@ jobs:
         run: |
           set -euo pipefail
           TAG="${{ inputs.releaseTag }}"
+          VER="${TAG#v}"
 
-          awk -v tag="$TAG" '
+          awk -v tag="$VER" '
             BEGIN {p=0}
             $0 ~ "^## \\[" tag "\\]" {p=1}
             p==1 {print}

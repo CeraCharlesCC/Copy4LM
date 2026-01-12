@@ -46,7 +46,7 @@ Your section must strictly follow:
 
 Example (illustrative only):
 
-## [v1.4.0] - 2025-09-11
+## [1.4.0] - 2025-09-11
 ### ⚠️ Breaking changes
 - Drop support for Python 3.8; require >=3.9. See README for upgrade notes.
 
