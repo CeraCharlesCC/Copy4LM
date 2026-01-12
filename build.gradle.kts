@@ -1,7 +1,6 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
-import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -40,6 +39,8 @@ dependencies {
 
     testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
+    // Workaround for IJPL-159134 (JUnit5 test framework refers to JUnit4 classes)
+    testRuntimeOnly("junit:junit:4.13.2")
 }
 
 // Set the JVM language level used to build the project.
