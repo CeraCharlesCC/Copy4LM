@@ -25,7 +25,7 @@ class CopyFileContentService(private val project: Project) {
         // Load settings
         val state = try {
             CopyFileContentSettings.getInstance(project).state
-        } catch (t: Throwable) {
+        } catch (_: Throwable) {
             NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
             return
         }
