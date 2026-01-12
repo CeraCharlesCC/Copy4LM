@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.application
+package io.github.ceracharlescc.copy4lm.application.usecase
 
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
