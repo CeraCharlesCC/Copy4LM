@@ -14,8 +14,8 @@ import com.intellij.openapi.project.Project
 class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings.State> {
 
     data class State(
-        var headerFormat: String = $$"// file: $FILE_PATH",
-        var footerFormat: String = "",
+        var headerFormat: String = $$"```$FILE_PATH",
+        var footerFormat: String = "```",
         var preText: String = "",
         var postText: String = "",
         var fileCountLimit: Int = 30,
