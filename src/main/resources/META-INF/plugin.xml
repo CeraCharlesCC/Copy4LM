@@ -6,7 +6,7 @@
     <depends>com.intellij.modules.platform</depends>
     <depends optional="true" config-file="META-INF/copy4lm-withVcs.xml">com.intellij.modules.vcs</depends>
 
-    <name>Copy File Content</name>
+    <name>Copy 4 LM</name>
     <vendor email="ceracharlescc@proton.me" url="https://github.com/CeraCharlesCC">C.C.</vendor>
 
     <!-- https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html -->
