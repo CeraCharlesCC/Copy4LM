@@ -97,18 +97,18 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
     }
 
     override fun isModified(): Boolean {
-        val s = settings.state
-        return s.filenameFilters != currentFilters() ||
-                headerFormatArea.text != s.headerFormat ||
-                preTextArea.text != s.preText ||
-                postTextArea.text != s.postText ||
-                extraLineCheckBox.isSelected != s.addExtraLineBetweenFiles ||
-                setMaxFilesCheckBox.isSelected != s.setMaxFileCount ||
-                (setMaxFilesCheckBox.isSelected && maxFilesField.text.toIntOrNull() != s.fileCountLimit) ||
-                maxFileSizeField.text.toIntOrNull() != s.maxFileSizeKB ||
-                showNotificationCheckBox.isSelected != s.showCopyNotification ||
-                useFilenameFiltersCheckBox.isSelected != s.useFilenameFilters ||
-                strictMemoryReadCheckBox.isSelected != s.strictMemoryRead
+        val state = settings.state
+        return state.filenameFilters != currentFilters() ||
+                headerFormatArea.text != state.headerFormat ||
+                preTextArea.text != state.preText ||
+                postTextArea.text != state.postText ||
+                extraLineCheckBox.isSelected != state.addExtraLineBetweenFiles ||
+                setMaxFilesCheckBox.isSelected != state.setMaxFileCount ||
+                (setMaxFilesCheckBox.isSelected && maxFilesField.text.toIntOrNull() != state.fileCountLimit) ||
+                maxFileSizeField.text.toIntOrNull() != state.maxFileSizeKB ||
+                showNotificationCheckBox.isSelected != state.showCopyNotification ||
+                useFilenameFiltersCheckBox.isSelected != state.useFilenameFilters ||
+                strictMemoryReadCheckBox.isSelected != state.strictMemoryRead
     }
 
     override fun apply() {
