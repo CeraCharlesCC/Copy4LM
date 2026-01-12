@@ -38,15 +38,8 @@ dependencies {
         pluginVerifier()
     }
 
-    intellijPlatform {
-        testFramework(TestFrameworkType.Platform)
-        testFramework(TestFrameworkType.JUnit5)
-    }
-
-    testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.jupiter)
-    testImplementation(libs.mockk)
-    testImplementation(libs.opentest4j)
 }
 
 // Set the JVM language level used to build the project.
