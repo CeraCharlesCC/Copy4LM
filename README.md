@@ -2,9 +2,11 @@
 
 ## Description
 <!-- Plugin description -->
-Copy File Content is a plugin that enhances your workflow by allowing you to quickly copy the contents of selected files and directories to the clipboard, formatted according to customizable settings.
+Copy4LM is a plugin that enhances your workflow by allowing you to quickly copy the contents of selected files and directories to the clipboard, formatted according to customizable settings.
 <!-- Plugin description end -->
 
 <div align="center">
-  This plugin is based on the mwguerra's [Copy File Content](https://github.com/mwguerra/copy-file-content) plugin.
+  This plugin is based on mwguerra's
+  <a href="https://github.com/mwguerra/copy-file-content">Copy File Content</a>
+  plugin.
 </div>
