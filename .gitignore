@@ -1,6 +1,19 @@
-.gradle
-.idea
-.qodana
-build
-/.intellijPlatform
-/.kotlin
+# explicit permission method; Ignore everything
+*
+# except the following files and directories
+!.gitignore
+!src/
+!gradle/
+!resources/
+!scripts/
+!AGENTS.md
+!build.gradle.kts
+!CHANGELOG.md
+!CLAUDE.md
+!gradle.properties
+!gradlew
+!gradlew.bat
+!LICENSE
+!qodana.yml
+!README.md
+!settings.gradle.kts
