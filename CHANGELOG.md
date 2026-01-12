@@ -1,3 +1,11 @@
+## [0.1.1] - 2026-01-12
+
+### Fixed
+- Fix compatibility with older IntelliJ versions by updating service instance retrieval.
+
+### Internal
+- Automate `plugin.xml` change-notes update from `CHANGELOG.md` during release.
+
 ## [0.1.0] - 2026-01-12
 
 ### Added

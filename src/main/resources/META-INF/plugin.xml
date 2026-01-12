@@ -32,9 +32,14 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.1.0 Changes:</h3>
+        <h3>Version 0.1.1 Changes:</h3>
+        <h4>Fixed</h4>
         <ul>
-            <li>Add initial plugin functionality to copy file contents from open tabs or selected files</li>
+        <li>Fix compatibility with older IntelliJ versions by updating service instance retrieval.</li>
+        </ul>
+        <h4>Internal</h4>
+        <ul>
+        <li>Automate `plugin.xml` change-notes update from `CHANGELOG.md` during release.</li>
         </ul>
         ]]>
     </change-notes>
