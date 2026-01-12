@@ -155,18 +155,31 @@ jobs:
           set -euo pipefail
           python .github/workflows/script/generate_changelog.py --new-tag "$NEW_TAG"
 
-      - name: Commit + push CHANGELOG (if changed)
+      - name: Update plugin.xml change-notes from CHANGELOG.md
+        env:
+          NEW_TAG: ${{ inputs.releaseTag }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          VER="${NEW_TAG#v}"
+          python .github/workflows/script/update_plugin_change_notes.py \
+            --plugin-xml "src/main/resources/META-INF/plugin.xml" \
+            --changelog "${{ env.CHANGELOG_PATH }}" \
+            --version "$VER"
+
+      - name: Commit + push release notes (CHANGELOG + plugin.xml) if changed
         shell: bash
         run: |
           set -euo pipefail
           TAG="${{ inputs.releaseTag }}"
           BRANCH="${{ steps.branch.outputs.branch }}"
+          PLUGIN_XML="src/main/resources/META-INF/plugin.xml"
 
-          if git diff --quiet -- "${{ env.CHANGELOG_PATH }}"; then
-            echo "No changelog changes to commit."
+          if git diff --quiet -- "${{ env.CHANGELOG_PATH }}" "$PLUGIN_XML"; then
+            echo "No changelog/plugin.xml changes to commit."
           else
-            git add "${{ env.CHANGELOG_PATH }}"
-            git commit -m "chore(changelog): update for ${TAG}"
+            git add "${{ env.CHANGELOG_PATH }}" "$PLUGIN_XML"
+            git commit -m "chore(release-notes): update for ${TAG}"
             git push origin "HEAD:${BRANCH}"
           fi
 
