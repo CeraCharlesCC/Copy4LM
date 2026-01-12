@@ -80,6 +80,8 @@ class CopyFileContentService(private val project: Project) {
     }
 
     companion object {
-        fun getInstance(project: Project): CopyFileContentService = project.service()
+        @JvmStatic
+        fun getInstance(project: Project): CopyFileContentService =
+            project.getService(CopyFileContentService::class.java)
     }
 }
