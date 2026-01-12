@@ -1,5 +1,6 @@
-package com.github.mwguerra.copyfilecontent
+package com.github.mwguerra.copyfilecontent.ui
 
+import com.github.mwguerra.copyfilecontent.CopyFileContentService
 import com.github.mwguerra.copyfilecontent.utils.NotificationUtil
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction

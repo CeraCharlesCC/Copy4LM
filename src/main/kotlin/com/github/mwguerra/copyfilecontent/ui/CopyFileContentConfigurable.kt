@@ -1,5 +1,6 @@
-package com.github.mwguerra.copyfilecontent
+package com.github.mwguerra.copyfilecontent.ui
 
+import com.github.mwguerra.copyfilecontent.CopyFileContentSettings
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
