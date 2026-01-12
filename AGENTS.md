@@ -27,7 +27,7 @@ The distributable ZIP file will be created at: `build/distributions/Copy_File_Co
 
 ### Code Coverage
 ```bash
-./gradlew koverReport
+./gradlew koverHtmlReport
 ```
 
 ### Running UI Tests
