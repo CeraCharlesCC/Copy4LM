@@ -1,6 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.jetbrains.intellij.platform.gradle.TestFrameworkType
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -36,6 +37,16 @@ dependencies {
         // Required for running plugin verifier
         pluginVerifier()
     }
+
+    intellijPlatform {
+        testFramework(TestFrameworkType.Platform)
+        testFramework(TestFrameworkType.JUnit5)
+    }
+
+    testImplementation(libs.junit)
+    testImplementation(libs.junit.jupiter)
+    testImplementation(libs.mockk)
+    testImplementation(libs.opentest4j)
 }
 
 // Set the JVM language level used to build the project.
@@ -149,4 +160,8 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
         // Automatically download and enable the robot-server plugin for this run
         robotServerPlugin()
     }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
