@@ -19,14 +19,14 @@ class CopyFileContentService(private val project: Project) {
 
     private val logger = Logger.getInstance(CopyFileContentService::class.java)
     private val clipboardGateway =
-        _root_ide_package_.io.github.ceracharlescc.copy4lm.infrastructure.awt.AwtClipboardGateway()
+       AwtClipboardGateway()
 
     fun copy(files: Array<VirtualFile>) {
         // Load settings
         val state = try {
-            _root_ide_package_.io.github.ceracharlescc.copy4lm.CopyFileContentSettings.getInstance(project).state
+            CopyFileContentSettings.getInstance(project).state
         } catch (t: Throwable) {
-            _root_ide_package_.io.github.ceracharlescc.copy4lm.utils.NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
+            NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
             return
         }
 
