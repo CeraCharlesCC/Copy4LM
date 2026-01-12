@@ -1,6 +1,6 @@
 package io.github.ceracharlescc.copy4lm
 
-import io.github.ceracharlescc.copy4lm.application.CopyFilesUseCase
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
 import io.github.ceracharlescc.copy4lm.infrastructure.awt.AwtClipboardGateway
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJFileGateway
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJLoggerAdapter
