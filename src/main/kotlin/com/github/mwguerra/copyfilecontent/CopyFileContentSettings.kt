@@ -12,8 +12,9 @@ import com.intellij.openapi.project.Project
     storages = [Storage("CopyFileContentSettings.xml")]
 )
 class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings.State> {
+
     data class State(
-        var headerFormat: String = "// file: \$FILE_PATH",
+        var headerFormat: String = $$"// file: $FILE_PATH",
         var preText: String = "",
         var postText: String = "",
         var fileCountLimit: Int = 30,
@@ -22,21 +23,19 @@ class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings
         var setMaxFileCount: Boolean = true,
         var showCopyNotification: Boolean = true,
         var useFilenameFilters: Boolean = false,
-        var strictMemoryRead: Boolean = true,  // Only read from memory if file is open in editor
-        var maxFileSizeKB: Int = 500  // Maximum file size in KB to copy (default 500KB)
+        var strictMemoryRead: Boolean = true,
+        var maxFileSizeKB: Int = 500
     )
 
     private var myState = State()
 
     override fun getState(): State = myState
-
     override fun loadState(state: State) {
         myState = state
     }
 
     companion object {
-        fun getInstance(project: Project): CopyFileContentSettings? {
-            return project.getService(CopyFileContentSettings::class.java)
-        }
+        fun getInstance(project: Project): CopyFileContentSettings =
+            project.getService(CopyFileContentSettings::class.java)
     }
 }

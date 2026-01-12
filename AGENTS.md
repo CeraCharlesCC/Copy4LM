@@ -55,38 +55,6 @@ This script:
 
 **IMPORTANT**: Always update the `<change-notes>` section in `src/main/resources/META-INF/plugin.xml` before running the release script.
 
-## Architecture
-
-### Core Components
-
-**CopyFileContentAction** (`src/main/kotlin/com/github/mwguerra/copyfilecontent/CopyFileContentAction.kt`)
-- Main action triggered from the context menu on selected files/directories
-- Recursively processes files and directories
-- Respects file count limits and extension filters
-- Skips binary files and files larger than 100KB
-- Provides clipboard content with customizable formatting
-- Shows notifications with statistics (file count, lines, words, estimated tokens)
-
-**CopyAllOpenTabsAction** (`src/main/kotlin/com/github/mwguerra/copyfilecontent/CopyAllOpenTabsAction.kt`)
-- Copies content from all currently open editor tabs
-- Reuses `CopyFileContentAction.performCopyFilesContent()` for consistent formatting
-
-**CopyFileContentSettings** (`src/main/kotlin/com/github/mwguerra/copyfilecontent/CopyFileContentSettings.kt`)
-- Project-level persistent settings component
-- Stores configuration in `.idea/CopyFileContentSettings.xml`
-- Settings include:
-  - `headerFormat`: Template for file headers (default: `// file: $FILE_PATH`)
-  - `preText` / `postText`: Text added before/after copied content
-  - `fileCountLimit`: Maximum files to copy (default: 30)
-  - `filenameFilters`: List of file extensions to include
-  - `addExtraLineBetweenFiles`: Spacing between files
-  - `setMaxFileCount`: Whether to enforce file limit
-  - `showCopyNotification`: Whether to show success notifications
-  - `useFilenameFilters`: Whether to apply extension filters
-
-**CopyFileContentConfigurable** (`src/main/kotlin/com/github/mwguerra/copyfilecontent/CopyFileContentConfigurable.kt`)
-- Settings UI panel accessible via IDE Preferences → Copy File Content Settings
-
 ### Plugin Configuration
 
 The plugin is configured in `src/main/resources/META-INF/plugin.xml`:
