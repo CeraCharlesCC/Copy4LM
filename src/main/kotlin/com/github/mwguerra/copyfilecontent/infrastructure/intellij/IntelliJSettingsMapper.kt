@@ -3,9 +3,6 @@ package com.github.mwguerra.copyfilecontent.infrastructure.intellij
 import com.github.mwguerra.copyfilecontent.CopyFileContentSettings
 import com.github.mwguerra.copyfilecontent.domain.CopyOptions
 
-/**
- * Maps IntelliJ settings state to domain CopyOptions.
- */
 object IntelliJSettingsMapper {
     fun toCopyOptions(state: CopyFileContentSettings.State): CopyOptions {
         return CopyOptions(

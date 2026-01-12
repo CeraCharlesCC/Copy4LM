@@ -2,7 +2,6 @@ package com.github.mwguerra.copyfilecontent.application.port
 
 /**
  * Abstract representation of a file in the file system.
- * Used to decouple the use case from IntelliJ's VirtualFile.
  */
 interface FileRef {
     val name: String
@@ -12,7 +11,6 @@ interface FileRef {
 
 /**
  * Port for file system operations.
- * Abstracts IntelliJ's VirtualFile APIs.
  */
 interface FileGateway {
     /**

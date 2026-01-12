@@ -2,7 +2,6 @@ package com.github.mwguerra.copyfilecontent.domain
 
 /**
  * Formats file headers for clipboard output.
- * Pure domain helper with no framework dependencies.
  */
 object HeaderFormatter {
     /**
@@ -15,7 +14,6 @@ object HeaderFormatter {
 
 /**
  * Formats file footers for clipboard output.
- * Pure domain helper with no framework dependencies.
  */
 object FooterFormatter {
     /**
@@ -28,7 +26,6 @@ object FooterFormatter {
 
 /**
  * Builds the clipboard text from file contents.
- * Pure domain helper with no framework dependencies.
  */
 class ClipboardTextBuilder(
     private val preText: String,

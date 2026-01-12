@@ -5,7 +5,6 @@ import com.intellij.openapi.diagnostic.Logger
 
 /**
  * IntelliJ adapter for LoggerPort.
- * Wraps IntelliJ's Logger.
  */
 class IntelliJLoggerAdapter(private val logger: Logger) : LoggerPort {
     override fun info(message: String) {

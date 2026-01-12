@@ -6,7 +6,6 @@ import java.awt.datatransfer.StringSelection
 
 /**
  * AWT adapter for ClipboardGateway port.
- * Wraps java.awt.Toolkit clipboard.
  */
 class AwtClipboardGateway : ClipboardGateway {
     override fun copy(text: String) {

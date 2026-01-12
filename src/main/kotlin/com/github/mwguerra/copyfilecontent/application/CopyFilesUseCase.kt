@@ -10,11 +10,6 @@ import com.github.mwguerra.copyfilecontent.domain.CopyStats
 import com.github.mwguerra.copyfilecontent.domain.FooterFormatter
 import com.github.mwguerra.copyfilecontent.domain.HeaderFormatter
 
-/**
- * Use case for copying file contents.
- * Orchestrates file traversal, filtering, formatting, and stats collection.
- * Framework-agnostic: depends only on ports and domain types.
- */
 class CopyFilesUseCase(
     private val fileGateway: FileGateway,
     private val logger: LoggerPort

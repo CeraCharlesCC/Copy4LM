@@ -2,8 +2,6 @@ package com.github.mwguerra.copyfilecontent.domain
 
 /**
  * Domain options for the copy operation.
- * Pure data class with no framework dependencies.
- * Maps from CopyFileContentSettings.State but decoupled from IntelliJ persistence.
  */
 data class CopyOptions(
     val headerFormat: String = "// file: \$FILE_PATH",

@@ -2,7 +2,6 @@ package com.github.mwguerra.copyfilecontent.application.port
 
 /**
  * Port for clipboard operations.
- * Abstracts AWT clipboard APIs.
  */
 interface ClipboardGateway {
     /**

@@ -14,10 +14,6 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 
-/**
- * Composition root for the Copy File Content plugin.
- * Wires adapters, use case, and handles IntelliJ-specific concerns.
- */
 @Service(Service.Level.PROJECT)
 class CopyFileContentService(private val project: Project) {
 

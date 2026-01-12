@@ -2,7 +2,6 @@ package com.github.mwguerra.copyfilecontent.domain
 
 /**
  * Tracks statistics about copied file content.
- * Pure domain object with no framework dependencies.
  */
 class CopyStats {
     var totalChars: Int = 0
