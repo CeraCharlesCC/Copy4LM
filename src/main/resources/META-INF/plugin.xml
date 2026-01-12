@@ -4,7 +4,7 @@
 
     <id>io.github.ceracharlescc.copy4lm</id>
     <depends>com.intellij.modules.platform</depends>
-    <depends optional="true" config-file="META-INF/copy4lm-withVcs.xml">com.intellij.modules.vcs</depends>
+    <depends optional="true" config-file="copy4lm-withVcs.xml">com.intellij.modules.vcs</depends>
 
     <name>Copy 4 LM</name>
     <vendor email="ceracharlescc@proton.me" url="https://github.com/CeraCharlesCC">C.C.</vendor>
