@@ -1,13 +1,24 @@
-# explicit permission method; Ignore everything
+# Ignore everything
 *
-# except the following files and directories
+
+# Allow these
 !.github/
 !.github/**
+
 !.gitignore
+
+!src/
 !src/**
+
+!gradle/
 !gradle/**
+
+!resources/
 !resources/**
+
+!scripts/
 !scripts/**
+
 !AGENTS.md
 !build.gradle.kts
 !CHANGELOG.md
