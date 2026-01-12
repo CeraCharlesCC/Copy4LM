@@ -1,24 +1,23 @@
 package io.github.ceracharlescc.copy4lm.ui
 
-import io.github.ceracharlescc.copy4lm.CopyFileContentSettings
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.JBColor
-import com.intellij.ui.components.*
+import com.intellij.ui.RoundedLineBorder
+import com.intellij.ui.components.JBCheckBox
+import com.intellij.ui.components.JBScrollPane
+import com.intellij.ui.components.JBTextArea
+import com.intellij.ui.components.JBTextField
 import com.intellij.ui.table.JBTable
 import com.intellij.util.ui.FormBuilder
 import com.intellij.util.ui.JBUI
-import com.intellij.ui.RoundedLineBorder
+import io.github.ceracharlescc.copy4lm.CopyFileContentSettings
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.FlowLayout
-import javax.swing.BorderFactory
-import javax.swing.JButton
-import javax.swing.JComponent
-import javax.swing.JLabel
-import javax.swing.JPanel
+import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
 class CopyFileContentConfigurable(private val project: Project) : Configurable {
@@ -80,7 +79,12 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
                 panel.add(createInlinePanel(createWrappedCheckBoxPanel(setMaxFilesCheckBox), maxFilesField))
                 panel.add(createInlinePanel(JLabel(), warningLabel))
                 panel.add(createLabeledPanel("Maximum file size (KB):", maxFileSizeField))
-                panel.add(createInlinePanel(createWrappedCheckBoxPanel(useFilenameFiltersCheckBox), filenameFiltersPanel))
+                panel.add(
+                    createInlinePanel(
+                        createWrappedCheckBoxPanel(useFilenameFiltersCheckBox),
+                        filenameFiltersPanel
+                    )
+                )
                 panel.add(createInlinePanel(JLabel(), infoLabel))
             }, 0)
             .addComponentFillVertically(createSection("File Reading Behavior") { panel ->
@@ -219,7 +223,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
     private fun createSection(title: String, content: (JPanel) -> Unit): JPanel {
         val panel = JPanel(BorderLayout())
         val contentPanel = JPanel().apply {
-            layout = javax.swing.BoxLayout(this, javax.swing.BoxLayout.Y_AXIS)
+            layout = BoxLayout(this, BoxLayout.Y_AXIS)
             border = JBUI.Borders.emptyRight(10)
         }
 

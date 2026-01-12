@@ -1,7 +1,7 @@
 package io.github.ceracharlescc.copy4lm.infrastructure.intellij
 
-import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 import com.intellij.openapi.diagnostic.Logger
+import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 
 /**
  * IntelliJ adapter for LoggerPort.

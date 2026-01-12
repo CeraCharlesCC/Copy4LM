@@ -1,25 +1,25 @@
 package io.github.ceracharlescc.copy4lm
 
-import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
-import io.github.ceracharlescc.copy4lm.infrastructure.awt.AwtClipboardGateway
-import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJFileGateway
-import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJLoggerAdapter
-import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJSettingsMapper
-import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.components.Service
-import com.intellij.openapi.components.service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
+import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJClipboardGateway
+import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJFileGateway
+import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJLoggerAdapter
+import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJSettingsMapper
+import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
+
 
 @Service(Service.Level.PROJECT)
 class CopyFileContentService(private val project: Project) {
 
     private val logger = Logger.getInstance(CopyFileContentService::class.java)
     private val clipboardGateway =
-       AwtClipboardGateway()
+        IntelliJClipboardGateway()
 
     fun copy(files: Array<VirtualFile>) {
         // Load settings

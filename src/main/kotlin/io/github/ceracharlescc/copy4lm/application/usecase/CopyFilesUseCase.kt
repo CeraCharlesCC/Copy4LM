@@ -3,12 +3,7 @@ package io.github.ceracharlescc.copy4lm.application.usecase
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
-import io.github.ceracharlescc.copy4lm.domain.ClipboardTextBuilder
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
-import io.github.ceracharlescc.copy4lm.domain.CopyResult
-import io.github.ceracharlescc.copy4lm.domain.CopyStats
-import io.github.ceracharlescc.copy4lm.domain.FooterFormatter
-import io.github.ceracharlescc.copy4lm.domain.HeaderFormatter
+import io.github.ceracharlescc.copy4lm.domain.*
 
 class CopyFilesUseCase(
     private val fileGateway: FileGateway,

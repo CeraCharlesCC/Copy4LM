@@ -1,11 +1,11 @@
 package io.github.ceracharlescc.copy4lm.ui
 
-import io.github.ceracharlescc.copy4lm.CopyFileContentService
-import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
+import io.github.ceracharlescc.copy4lm.CopyFileContentService
+import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
 class CopyAllOpenTabsAction : AnAction() {
 

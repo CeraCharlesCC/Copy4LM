@@ -1,7 +1,5 @@
 package io.github.ceracharlescc.copy4lm.infrastructure.intellij
 
-import io.github.ceracharlescc.copy4lm.application.port.FileGateway
-import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
@@ -9,6 +7,8 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import io.github.ceracharlescc.copy4lm.application.port.FileGateway
+import io.github.ceracharlescc.copy4lm.application.port.FileRef
 
 /**
  * Wrapper around VirtualFile implementing FileRef.
