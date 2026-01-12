@@ -26,6 +26,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
     private val settings = CopyFileContentSettings.getInstance(project)
 
     private val headerFormatArea = styledTextArea()
+    private val footerFormatArea = styledTextArea()
     private val preTextArea = styledTextArea()
     private val postTextArea = styledTextArea()
 
@@ -71,6 +72,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
             .addComponentFillVertically(createSection("Text structure of what's going to the clipboard") { panel ->
                 panel.add(createLabeledPanel("Pre Text:", preTextArea))
                 panel.add(createLabeledPanel("File Header Format:", headerFormatArea))
+                panel.add(createLabeledPanel("File Footer Format:", footerFormatArea))
                 panel.add(createLabeledPanel("Post Text:", postTextArea))
                 panel.add(extraLineCheckBox)
             }, 0)
@@ -100,6 +102,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
         val state = settings.state
         return state.filenameFilters != currentFilters() ||
                 headerFormatArea.text != state.headerFormat ||
+                footerFormatArea.text != state.footerFormat ||
                 preTextArea.text != state.preText ||
                 postTextArea.text != state.postText ||
                 extraLineCheckBox.isSelected != state.addExtraLineBetweenFiles ||
@@ -115,6 +118,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
         val state = settings.state
         state.filenameFilters = currentFilters()
         state.headerFormat = headerFormatArea.text
+        state.footerFormat = footerFormatArea.text
         state.preText = preTextArea.text
         state.postText = postTextArea.text
         state.addExtraLineBetweenFiles = extraLineCheckBox.isSelected
@@ -130,6 +134,7 @@ class CopyFileContentConfigurable(private val project: Project) : Configurable {
     override fun reset() {
         val state = settings.state
         headerFormatArea.text = state.headerFormat
+        footerFormatArea.text = state.footerFormat
         preTextArea.text = state.preText
         postTextArea.text = state.postText
 
