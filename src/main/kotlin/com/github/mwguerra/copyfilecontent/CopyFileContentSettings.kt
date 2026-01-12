@@ -15,6 +15,7 @@ class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings
 
     data class State(
         var headerFormat: String = $$"// file: $FILE_PATH",
+        var footerFormat: String = "",
         var preText: String = "",
         var postText: String = "",
         var fileCountLimit: Int = 30,

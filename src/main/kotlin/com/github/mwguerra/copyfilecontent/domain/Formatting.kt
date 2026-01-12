@@ -14,6 +14,19 @@ object HeaderFormatter {
 }
 
 /**
+ * Formats file footers for clipboard output.
+ * Pure domain helper with no framework dependencies.
+ */
+object FooterFormatter {
+    /**
+     * Replaces $FILE_PATH placeholder with the actual file path.
+     */
+    fun format(footerFormat: String, relativePath: String): String {
+        return footerFormat.replace("\$FILE_PATH", relativePath)
+    }
+}
+
+/**
  * Builds the clipboard text from file contents.
  * Pure domain helper with no framework dependencies.
  */
@@ -31,9 +44,12 @@ class ClipboardTextBuilder(
         }
     }
 
-    fun addFile(header: String, content: String) {
+    fun addFile(header: String, content: String, footer: String = "") {
         parts.add(header)
         parts.add(content)
+        if (footer.isNotEmpty()) {
+            parts.add(footer)
+        }
         fileCount++
 
         if (addExtraLineBetweenFiles && content.isNotEmpty()) {

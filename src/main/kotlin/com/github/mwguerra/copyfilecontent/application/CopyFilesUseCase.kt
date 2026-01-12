@@ -7,6 +7,7 @@ import com.github.mwguerra.copyfilecontent.domain.ClipboardTextBuilder
 import com.github.mwguerra.copyfilecontent.domain.CopyOptions
 import com.github.mwguerra.copyfilecontent.domain.CopyResult
 import com.github.mwguerra.copyfilecontent.domain.CopyStats
+import com.github.mwguerra.copyfilecontent.domain.FooterFormatter
 import com.github.mwguerra.copyfilecontent.domain.HeaderFormatter
 
 /**
@@ -95,8 +96,9 @@ private class CopyRunner(
 
         val content = fileGateway.readText(file, options.strictMemoryRead)
         val header = HeaderFormatter.format(options.headerFormat, relativePath)
+        val footer = FooterFormatter.format(options.footerFormat, relativePath)
 
-        textBuilder.addFile(header, content)
+        textBuilder.addFile(header, content, footer)
         copiedFileCount++
         stats.add(content)
     }

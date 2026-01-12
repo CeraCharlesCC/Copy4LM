@@ -10,6 +10,7 @@ object IntelliJSettingsMapper {
     fun toCopyOptions(state: CopyFileContentSettings.State): CopyOptions {
         return CopyOptions(
             headerFormat = state.headerFormat,
+            footerFormat = state.footerFormat,
             preText = state.preText,
             postText = state.postText,
             fileCountLimit = state.fileCountLimit,
