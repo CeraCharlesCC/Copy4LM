@@ -35,25 +35,10 @@ The distributable ZIP file will be created at: `build/distributions/Copy_File_Co
 ./gradlew runIdeForUiTests
 ```
 
-## Version Management & Release Process
-
-### Creating a New Release
-Use the automated version update script:
+### Test build
 ```bash
-./scripts/update_version.sh
+./gradlew buildPlugin
 ```
-
-This script:
-1. Prompts to confirm change notes in `plugin.xml` were updated
-2. Increments version (or accepts custom version)
-3. Updates version in both `plugin.xml` and `gradle.properties`
-4. Commits any uncommitted changes
-5. Commits the version change with message: `chore: version changed to {version}`
-6. Builds the project
-7. Creates a git tag
-8. Optionally pushes changes and tags to origin
-
-**IMPORTANT**: Always update the `<change-notes>` section in `src/main/resources/META-INF/plugin.xml` before running the release script.
 
 ### Plugin Configuration
 
