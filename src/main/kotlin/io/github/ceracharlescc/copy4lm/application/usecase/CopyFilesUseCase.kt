@@ -6,7 +6,7 @@ import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 import io.github.ceracharlescc.copy4lm.domain.*
 
-class CopyFilesUseCase(
+internal class CopyFilesUseCase(
     private val fileGateway: FileGateway,
     private val logger: LoggerPort
 ) {

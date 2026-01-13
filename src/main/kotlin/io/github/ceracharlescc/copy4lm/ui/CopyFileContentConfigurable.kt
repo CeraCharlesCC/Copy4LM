@@ -20,7 +20,7 @@ import java.awt.FlowLayout
 import javax.swing.*
 import javax.swing.table.DefaultTableModel
 
-class CopyFileContentConfigurable(private val project: Project) : Configurable {
+internal class CopyFileContentConfigurable(private val project: Project) : Configurable {
 
     private val settings = CopyFileContentSettings.getInstance(project)
 

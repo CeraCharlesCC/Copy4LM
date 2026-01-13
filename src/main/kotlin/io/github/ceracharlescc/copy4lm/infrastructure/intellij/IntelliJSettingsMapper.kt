@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.infrastructure.intellij
 import io.github.ceracharlescc.copy4lm.CopyFileContentSettings
 import io.github.ceracharlescc.copy4lm.domain.CopyOptions
 
-object IntelliJSettingsMapper {
+internal object IntelliJSettingsMapper {
     fun toCopyOptions(state: CopyFileContentSettings.State): CopyOptions {
         return CopyOptions(
             headerFormat = state.headerFormat,

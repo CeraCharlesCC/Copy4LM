@@ -6,7 +6,7 @@ import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 /**
  * IntelliJ adapter for LoggerPort.
  */
-class IntelliJLoggerAdapter(private val logger: Logger) : LoggerPort {
+internal class IntelliJLoggerAdapter(private val logger: Logger) : LoggerPort {
     override fun info(message: String) {
         logger.info(message)
     }

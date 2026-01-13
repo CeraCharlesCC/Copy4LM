@@ -15,7 +15,7 @@ import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
 
 @Service(Service.Level.PROJECT)
-class CopyFileContentService(private val project: Project) {
+internal class CopyFileContentService(private val project: Project) {
 
     private val logger = Logger.getInstance(CopyFileContentService::class.java)
     private val clipboardGateway =

@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.domain
 /**
  * Tracks statistics about copied file content.
  */
-class CopyStats {
+internal class CopyStats {
     var totalChars: Int = 0
         private set
     var totalLines: Int = 0
@@ -25,7 +25,7 @@ class CopyStats {
  * Estimates token count for LLM context.
  * Considers words and punctuation as tokens.
  */
-object TokenEstimator {
+internal object TokenEstimator {
     fun estimate(content: String): Int {
         val words = content.split(Regex("\\s+")).count { it.isNotBlank() }
         val punctuation = Regex("[;{}()\\[\\],]").findAll(content).count()

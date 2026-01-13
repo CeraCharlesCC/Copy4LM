@@ -1,6 +1,6 @@
 package io.github.ceracharlescc.copy4lm.domain.clipboard
 
-class ClipboardTextBuilder(
+internal class ClipboardTextBuilder(
     private val preText: String,
     private val postText: String,
     private val addExtraLineBetweenFiles: Boolean

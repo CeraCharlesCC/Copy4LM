@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import io.github.ceracharlescc.copy4lm.CopyFileContentService
 import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
-class CopyFileContentAction : AnAction() {
+internal class CopyFileContentAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: run {

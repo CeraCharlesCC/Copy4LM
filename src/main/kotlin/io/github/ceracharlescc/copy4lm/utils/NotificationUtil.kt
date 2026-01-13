@@ -7,7 +7,7 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 
-object NotificationUtil {
+internal object NotificationUtil {
     private const val GROUP_ID = "Copy File Content"
     private const val SETTINGS_NAME = "Copy File Content Settings"
 

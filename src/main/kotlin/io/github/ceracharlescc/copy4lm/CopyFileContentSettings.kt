@@ -11,7 +11,7 @@ import com.intellij.openapi.project.Project
     name = "CopyFileContentSettings",
     storages = [Storage("CopyFileContentSettings.xml")]
 )
-class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings.State> {
+internal class CopyFileContentSettings : PersistentStateComponent<CopyFileContentSettings.State> {
 
     data class State(
         var headerFormat: String = $$"```$FILE_PATH",
