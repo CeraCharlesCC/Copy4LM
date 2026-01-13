@@ -7,5 +7,10 @@
             <add-to-group group-id="Vcs.Log.ContextMenu" anchor="last"/>
             <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
         </reference>
+        <!-- Add Copy Directory Structure action to VCS-related context menus -->
+        <reference ref="CopyDirectoryStructureAction">
+            <add-to-group group-id="Vcs.Log.ContextMenu" anchor="last"/>
+            <add-to-group group-id="ChangesViewPopupMenu" anchor="last"/>
+        </reference>
     </actions>
 </idea-plugin>

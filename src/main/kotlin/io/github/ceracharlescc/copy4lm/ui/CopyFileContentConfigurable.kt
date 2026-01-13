@@ -69,6 +69,11 @@ internal class CopyFileContentConfigurable(private val project: Project) : Confi
 
         return FormBuilder.createFormBuilder()
             .addComponentFillVertically(createSection("Text structure of what's going to the clipboard") { panel ->
+                val placeholderHelpLabel = JLabel(
+                    "<html><small>Available placeholders: <code>\$PROJECT_NAME</code>, <code>\$FILE_PATH</code>, <code>\$DIRECTORY_STRUCTURE</code></small></html>"
+                )
+                placeholderHelpLabel.border = JBUI.Borders.emptyBottom(8)
+                panel.add(placeholderHelpLabel)
                 panel.add(createLabeledPanel("Pre Text:", preTextArea))
                 panel.add(createLabeledPanel("File Header Format:", headerFormatArea))
                 panel.add(createLabeledPanel("File Footer Format:", footerFormatArea))

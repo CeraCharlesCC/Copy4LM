@@ -66,6 +66,12 @@
                 description="Copy the content of all open editor tabs to the clipboard.">
             <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="CopyPaths"/>
         </action>
+        <action id="CopyDirectoryStructureAction"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyDirectoryStructureAction"
+                text="Copy Directory Structure to Clipboard"
+                description="Copy a tree view of selected directories/files to the clipboard.">
+            <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyFileContentContentsAction"/>
+        </action>
 
         <!-- For Rider -->
         <action id="CopyFileContentContentsActionRider"
@@ -73,6 +79,12 @@
                 text="Copy File Content to Clipboard"
                 description="Copy folder and file content to the clipboard.">
             <add-to-group group-id="CopyReferencePopupGroup" anchor="after" relative-to-action="CopyPaths"/>
+        </action>
+        <action id="CopyDirectoryStructureActionRider"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyDirectoryStructureAction"
+                text="Copy Directory Structure to Clipboard"
+                description="Copy a tree view of selected directories/files to the clipboard.">
+            <add-to-group group-id="CopyReferencePopupGroup" anchor="after" relative-to-action="CopyFileContentContentsActionRider"/>
         </action>
     </actions>
 </idea-plugin>

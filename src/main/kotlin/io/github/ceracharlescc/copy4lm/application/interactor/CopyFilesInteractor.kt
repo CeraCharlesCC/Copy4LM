@@ -7,6 +7,7 @@ import io.github.ceracharlescc.copy4lm.domain.clipboard.ClipboardTextBuilder
 import io.github.ceracharlescc.copy4lm.domain.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.CopyStats
+import io.github.ceracharlescc.copy4lm.domain.directory.DirectoryStructureBuilder
 import io.github.ceracharlescc.copy4lm.domain.formatting.PlaceholderFormatter
 
 internal class CopyFilesInteractor(
@@ -14,46 +15,94 @@ internal class CopyFilesInteractor(
     private val logger: LoggerPort,
     private val options: CopyOptions
 ) {
-    private val textBuilder = ClipboardTextBuilder(
-        preText = PlaceholderFormatter.format(options.preText, options.projectName),
-        postText = PlaceholderFormatter.format(options.postText, options.projectName),
-        addExtraLineBetweenFiles = options.addExtraLineBetweenFiles
-    )
     private val seenRelativePaths = mutableSetOf<String>()
-    private var copiedFileCount = 0
     private var fileLimitReached = false
-    private val stats = CopyStats()
 
     fun run(files: List<FileRef>): CopyResult {
-        for (file in files) {
-            visit(file)
-            if (fileLimitReached) break
+        // Phase 1: Collect planned files
+        val plannedFiles = collectPlannedFiles(files)
+
+        // Build directory structure from collected files
+        val directoryStructure = DirectoryStructureBuilder.build(
+            rootName = options.projectName,
+            relativePaths = plannedFiles.map { it.relativePath }
+        )
+
+        // Phase 2: Render clipboard text with directory structure context
+        val textBuilder = ClipboardTextBuilder(
+            preText = PlaceholderFormatter.format(options.preText, options.projectName, directoryStructure = directoryStructure),
+            postText = PlaceholderFormatter.format(options.postText, options.projectName, directoryStructure = directoryStructure),
+            addExtraLineBetweenFiles = options.addExtraLineBetweenFiles
+        )
+
+        val stats = CopyStats()
+
+        for (planned in plannedFiles) {
+            val content = fileGateway.readText(planned.fileRef, options.strictMemoryRead)
+            val header = PlaceholderFormatter.format(
+                options.headerFormat,
+                options.projectName,
+                planned.relativePath,
+                directoryStructure
+            )
+            val footer = PlaceholderFormatter.format(
+                options.footerFormat,
+                options.projectName,
+                planned.relativePath,
+                directoryStructure
+            )
+
+            textBuilder.addFile(header, content, footer)
+            stats.add(content)
         }
 
         return CopyResult(
             clipboardText = textBuilder.build(),
-            copiedFileCount = copiedFileCount,
+            copiedFileCount = plannedFiles.size,
             stats = stats,
             fileLimitReached = fileLimitReached
         )
     }
 
-    private fun visit(file: FileRef) {
-        if (shouldStop()) return
+    /**
+     * Collects files that would be copied, returning only relative paths.
+     * Used by copyDirectoryStructure to get the structure without reading file contents.
+     */
+    fun collectFilePaths(files: List<FileRef>): CollectedFiles {
+        val plannedFiles = collectPlannedFiles(files)
+        return CollectedFiles(
+            relativePaths = plannedFiles.map { it.relativePath },
+            fileLimitReached = fileLimitReached
+        )
+    }
+
+    private fun collectPlannedFiles(files: List<FileRef>): List<PlannedFile> {
+        val plannedFiles = mutableListOf<PlannedFile>()
+
+        for (file in files) {
+            collectFromFile(file, plannedFiles)
+            if (fileLimitReached) break
+        }
+
+        return plannedFiles
+    }
+
+    private fun collectFromFile(file: FileRef, plannedFiles: MutableList<PlannedFile>) {
+        if (shouldStop(plannedFiles.size)) return
 
         if (file.isDirectory) {
             for (child in fileGateway.childrenOf(file)) {
-                visit(child)
+                collectFromFile(child, plannedFiles)
                 if (fileLimitReached) return
             }
             return
         }
 
-        copyFile(file)
+        collectSingleFile(file, plannedFiles)
     }
 
-    private fun copyFile(file: FileRef) {
-        if (shouldStop()) return
+    private fun collectSingleFile(file: FileRef, plannedFiles: MutableList<PlannedFile>) {
+        if (shouldStop(plannedFiles.size)) return
 
         if (!passesFilenameFilter(file)) {
             logger.info("Skipping file: ${file.name} - Extension does not match any filter")
@@ -77,18 +126,12 @@ internal class CopyFilesInteractor(
             return
         }
 
-        val content = fileGateway.readText(file, options.strictMemoryRead)
-        val header = PlaceholderFormatter.format(options.headerFormat, options.projectName, relativePath)
-        val footer = PlaceholderFormatter.format(options.footerFormat, options.projectName, relativePath)
-
-        textBuilder.addFile(header, content, footer)
-        copiedFileCount++
-        stats.add(content)
+        plannedFiles.add(PlannedFile(file, relativePath))
     }
 
-    private fun shouldStop(): Boolean {
+    private fun shouldStop(currentCount: Int): Boolean {
         if (!options.setMaxFileCount) return false
-        if (copiedFileCount < options.fileCountLimit) return false
+        if (currentCount < options.fileCountLimit) return false
         fileLimitReached = true
         return true
     }
@@ -102,4 +145,14 @@ internal class CopyFilesInteractor(
         val maxBytes = options.maxFileSizeKB.toLong() * 1024L
         return fileGateway.sizeBytes(file) > maxBytes
     }
+
+    private data class PlannedFile(
+        val fileRef: FileRef,
+        val relativePath: String
+    )
 }
+
+internal data class CollectedFiles(
+    val relativePaths: List<String>,
+    val fileLimitReached: Boolean
+)
