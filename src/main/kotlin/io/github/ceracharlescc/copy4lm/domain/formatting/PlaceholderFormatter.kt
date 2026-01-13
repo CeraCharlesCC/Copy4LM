@@ -11,10 +11,10 @@ internal object PlaceholderFormatter {
         if (relativePath != null) {
             out = out.replace(Placeholders.FILE_PATH, relativePath)
         }
-        if (directoryStructure != null) {
-            out = out.replace(Placeholders.DIRECTORY_STRUCTURE, directoryStructure)
+        out = if (directoryStructure != null) {
+            out.replace(Placeholders.DIRECTORY_STRUCTURE, directoryStructure)
         } else {
-            out = out.replace(Placeholders.DIRECTORY_STRUCTURE, "")
+            out.replace(Placeholders.DIRECTORY_STRUCTURE, "")
         }
         return out
     }
