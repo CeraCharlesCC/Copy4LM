@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.application.interactor
+package io.github.ceracharlescc.copy4lm.domain.vo
 
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 

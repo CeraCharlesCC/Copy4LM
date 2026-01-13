@@ -2,12 +2,12 @@ package io.github.ceracharlescc.copy4lm.application.interactor
 
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
-import io.github.ceracharlescc.copy4lm.domain.clipboard.ClipboardTextBuilder
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
-import io.github.ceracharlescc.copy4lm.domain.CopyResult
-import io.github.ceracharlescc.copy4lm.domain.CopyStats
-import io.github.ceracharlescc.copy4lm.domain.directory.DirectoryStructureBuilder
-import io.github.ceracharlescc.copy4lm.domain.formatting.PlaceholderFormatter
+import io.github.ceracharlescc.copy4lm.domain.service.ClipboardTextBuilder
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
+import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
+import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 
 internal class CopyFilesInteractor(
     private val fileGateway: FileGateway,
@@ -31,7 +31,7 @@ internal class CopyFilesInteractor(
             addExtraLineBetweenFiles = options.addExtraLineBetweenFiles
         )
 
-        val stats = CopyStats()
+        var stats = CopyStats()
 
         for (planned in plannedFiles) {
             val content = fileGateway.readText(planned.fileRef, options.strictMemoryRead)
@@ -49,7 +49,7 @@ internal class CopyFilesInteractor(
             )
 
             textBuilder.addFile(header, content, footer)
-            stats.add(content)
+            stats = stats.plus(content)
         }
 
         return CopyResult(

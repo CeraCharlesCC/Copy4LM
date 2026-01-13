@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain.formatting
+package io.github.ceracharlescc.copy4lm.domain.constant
 
 internal object Placeholders {
     const val PROJECT_NAME = "\$PROJECT_NAME"

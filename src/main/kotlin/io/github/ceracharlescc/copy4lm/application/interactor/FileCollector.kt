@@ -3,7 +3,9 @@ package io.github.ceracharlescc.copy4lm.application.interactor
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
-import io.github.ceracharlescc.copy4lm.domain.FileCollectionOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CollectedFiles
+import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.PlannedFile
 
 internal class FileCollector(
     private val fileGateway: FileGateway,

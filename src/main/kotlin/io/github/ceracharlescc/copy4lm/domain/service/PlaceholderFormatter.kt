@@ -1,4 +1,6 @@
-package io.github.ceracharlescc.copy4lm.domain.formatting
+package io.github.ceracharlescc.copy4lm.domain.service
+
+import io.github.ceracharlescc.copy4lm.domain.constant.Placeholders
 
 internal object PlaceholderFormatter {
     fun format(

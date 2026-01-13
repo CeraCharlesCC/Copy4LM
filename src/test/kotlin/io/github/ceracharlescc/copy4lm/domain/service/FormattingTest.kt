@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain.formatting
+package io.github.ceracharlescc.copy4lm.domain.service
 
 import org.junit.jupiter.api.Test
 

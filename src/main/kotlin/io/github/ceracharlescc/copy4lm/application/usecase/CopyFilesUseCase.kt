@@ -5,9 +5,9 @@ import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
-import io.github.ceracharlescc.copy4lm.domain.CopyResult
-import io.github.ceracharlescc.copy4lm.domain.toFileCollectionOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
+import io.github.ceracharlescc.copy4lm.domain.vo.toFileCollectionOptions
 
 internal class CopyFilesUseCase(
     private val fileGateway: FileGateway,

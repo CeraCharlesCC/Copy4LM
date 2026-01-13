@@ -8,10 +8,10 @@ import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
 import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
-import io.github.ceracharlescc.copy4lm.domain.ClipboardCopyOutcome
-import io.github.ceracharlescc.copy4lm.domain.NotificationKind
-import io.github.ceracharlescc.copy4lm.domain.NotificationPayload
-import io.github.ceracharlescc.copy4lm.domain.directory.DirectoryStructureBuilder
+import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
+import io.github.ceracharlescc.copy4lm.domain.vo.ClipboardCopyOutcome
+import io.github.ceracharlescc.copy4lm.domain.vo.NotificationKind
+import io.github.ceracharlescc.copy4lm.domain.vo.NotificationPayload
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJClipboardGateway
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJFileGateway
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJLoggerAdapter

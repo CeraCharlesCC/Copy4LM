@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain
+package io.github.ceracharlescc.copy4lm.domain.vo
 
 /**
  * Options for file collection (shared constraints between file content copy and directory structure copy).

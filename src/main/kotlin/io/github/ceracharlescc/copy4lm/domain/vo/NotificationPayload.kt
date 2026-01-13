@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain
+package io.github.ceracharlescc.copy4lm.domain.vo
 
 internal enum class NotificationKind {
     Information,

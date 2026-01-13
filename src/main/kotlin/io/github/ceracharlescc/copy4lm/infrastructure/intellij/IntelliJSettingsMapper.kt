@@ -1,9 +1,9 @@
 package io.github.ceracharlescc.copy4lm.infrastructure.intellij
 
 import io.github.ceracharlescc.copy4lm.Copy4LMSettings
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
-import io.github.ceracharlescc.copy4lm.domain.FileCollectionOptions
-import io.github.ceracharlescc.copy4lm.domain.formatting.PlaceholderFormatter
+import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
 
 internal object IntelliJSettingsMapper {
 

@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain.clipboard
+package io.github.ceracharlescc.copy4lm.domain.service
 
 internal class ClipboardTextBuilder(
     private val preText: String,

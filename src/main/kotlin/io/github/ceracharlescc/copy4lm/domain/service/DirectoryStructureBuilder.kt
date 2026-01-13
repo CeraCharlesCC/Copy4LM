@@ -1,4 +1,4 @@
-package io.github.ceracharlescc.copy4lm.domain.directory
+package io.github.ceracharlescc.copy4lm.domain.service
 
 internal object DirectoryStructureBuilder {
 

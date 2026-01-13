@@ -1,5 +1,5 @@
 package io.github.ceracharlescc.copy4lm.application.usecase
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.testsupport.CapturingLogger
 import io.github.ceracharlescc.copy4lm.testsupport.FakeFileGateway
 import io.github.ceracharlescc.copy4lm.testsupport.FakeFileRef
