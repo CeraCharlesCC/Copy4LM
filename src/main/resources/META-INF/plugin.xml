@@ -32,14 +32,28 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.1.1 Changes:</h3>
-        <h4>Fixed</h4>
+        <h3>Version 0.2.0 Changes:</h3>
+        <h4>⚠️ Breaking changes</h4>
         <ul>
-        <li>Fix compatibility with older IntelliJ versions by updating service instance retrieval.</li>
+        <li>Update placeholder syntax to use double dollar signs (e.g., `$$&quot;$PROJECT_NAME&quot;`) to avoid string interpolation issues; existing templates must be updated.</li>
+        </ul>
+        <h4>Added</h4>
+        <ul>
+        <li>Add directory structure copy feature to copy a tree view of selected directories/files (#2).</li>
+        <li>Add `$DIRECTORY_STRUCTURE` placeholder for formatting.</li>
+        <li>Split settings UI into separate panels for File Content and Directory Structure.</li>
+        </ul>
+        <h4>Changed</h4>
+        <ul>
+        <li>Replace AWT clipboard with IntelliJ platform clipboard integration.</li>
+        <li>Update plugin description to clarify LLM context formatting.</li>
+        <li>Improve internal domain model structure and encapsulation.</li>
         </ul>
         <h4>Internal</h4>
         <ul>
-        <li>Automate `plugin.xml` change-notes update from `CHANGELOG.md` during release.</li>
+        <li>Add GitHub Actions CI workflow.</li>
+        <li>Add unit tests for `CopyFilesInteractor` and `FileCollector`.</li>
+        <li>Refactor copy logic into `CopyFilesInteractor` and `FileCollector`.</li>
         </ul>
         ]]>
     </change-notes>

@@ -1,3 +1,23 @@
+## [0.2.0] - 2026-01-13
+
+### ⚠️ Breaking changes
+- Update placeholder syntax to use double dollar signs (e.g., `$$"$PROJECT_NAME"`) to avoid string interpolation issues; existing templates must be updated.
+
+### Added
+- Add directory structure copy feature to copy a tree view of selected directories/files (#2).
+- Add `$DIRECTORY_STRUCTURE` placeholder for formatting.
+- Split settings UI into separate panels for File Content and Directory Structure.
+
+### Changed
+- Replace AWT clipboard with IntelliJ platform clipboard integration.
+- Update plugin description to clarify LLM context formatting.
+- Improve internal domain model structure and encapsulation.
+
+### Internal
+- Add GitHub Actions CI workflow.
+- Add unit tests for `CopyFilesInteractor` and `FileCollector`.
+- Refactor copy logic into `CopyFilesInteractor` and `FileCollector`.
+
 ## [0.1.1] - 2026-01-12
 
 ### Fixed
