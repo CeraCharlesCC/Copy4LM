@@ -8,13 +8,10 @@ internal class ClipboardTextBuilder(
     private val parts = mutableListOf<String>()
     private var fileCount = 0
 
-    init {
-        if (preText.isNotEmpty()) {
+    fun addFile(header: String, content: String, footer: String = "") {
+        if (fileCount == 0 && preText.isNotEmpty()) {
             parts.add(preText)
         }
-    }
-
-    fun addFile(header: String, content: String, footer: String = "") {
         parts.add(header)
         parts.add(content)
         if (footer.isNotEmpty()) {
@@ -28,6 +25,8 @@ internal class ClipboardTextBuilder(
     }
 
     fun build(): String {
+        if (fileCount == 0) return ""
+
         if (postText.isNotEmpty()) {
             parts.add(postText)
         }
