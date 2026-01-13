@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.application.interactor
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
-import io.github.ceracharlescc.copy4lm.domain.ClipboardTextBuilder
+import io.github.ceracharlescc.copy4lm.domain.clipboard.ClipboardTextBuilder
 import io.github.ceracharlescc.copy4lm.domain.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.CopyStats
