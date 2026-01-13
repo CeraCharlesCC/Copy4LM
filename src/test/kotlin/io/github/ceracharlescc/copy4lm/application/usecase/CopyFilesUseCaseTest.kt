@@ -25,8 +25,8 @@ internal class CopyFilesUseCaseTest {
         val useCase = CopyFilesUseCase(gateway, logger)
 
         val options = CopyOptions(
-            headerFormat = "H:\$FILE_PATH",
-            footerFormat = "F:\$FILE_PATH",
+            headerFormat = $$"H:$FILE_PATH",
+            footerFormat = $$"F:$FILE_PATH",
             preText = "PRE",
             postText = "POST",
             addExtraLineBetweenFiles = true,
@@ -85,8 +85,8 @@ internal class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a, b),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 useFilenameFilters = false,
                 maxFileSizeKB = 500
             )
@@ -139,8 +139,8 @@ internal class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(kt, txt),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 useFilenameFilters = true,
                 filenameFilters = listOf(".kt")
             )
@@ -165,8 +165,8 @@ internal class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a1, a2),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH"
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH"
             )
         )
 
@@ -191,8 +191,8 @@ internal class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a, b),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 setMaxFileCount = true,
                 fileCountLimit = 1
             )
