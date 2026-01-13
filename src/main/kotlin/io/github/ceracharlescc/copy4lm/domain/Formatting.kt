@@ -1,32 +1,27 @@
 package io.github.ceracharlescc.copy4lm.domain
 
-/**
- * Formats file headers for clipboard output.
- */
 object HeaderFormatter {
-    /**
-     * Replaces $FILE_PATH placeholder with the actual file path.
-     */
     fun format(headerFormat: String, relativePath: String): String {
         return headerFormat.replace("\$FILE_PATH", relativePath)
     }
 }
 
-/**
- * Formats file footers for clipboard output.
- */
 object FooterFormatter {
-    /**
-     * Replaces $FILE_PATH placeholder with the actual file path.
-     */
     fun format(footerFormat: String, relativePath: String): String {
         return footerFormat.replace("\$FILE_PATH", relativePath)
     }
 }
 
-/**
- * Builds the clipboard text from file contents.
- */
+object PlaceholderFormatter {
+    fun format(template: String, projectName: String, relativePath: String? = null): String {
+        var out = template.replace("\$PROJECT_NAME", projectName)
+        if (relativePath != null) {
+            out = out.replace("\$FILE_PATH", relativePath)
+        }
+        return out
+    }
+}
+
 class ClipboardTextBuilder(
     private val preText: String,
     private val postText: String,
