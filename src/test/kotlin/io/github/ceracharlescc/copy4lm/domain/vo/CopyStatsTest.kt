@@ -1,16 +1,18 @@
-package io.github.ceracharlescc.copy4lm.domain
+package io.github.ceracharlescc.copy4lm.domain.vo
+
+import io.github.ceracharlescc.copy4lm.domain.service.TokenEstimator
 
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class CopyStatsTest {
+internal class CopyStatsTest {
 
     @Test
-    fun `add accumulates chars, lines, words, tokens`() {
-        val stats = CopyStats()
+    fun `plus accumulates chars, lines, words, tokens`() {
+        var stats = CopyStats()
 
-        stats.add("one")
-        stats.add("two\nthree")
+        stats = stats.plus("one")
+        stats = stats.plus("two\nthree")
 
         // chars: "one"(3) + "two\nthree"(9) = 12
         assertEquals(12, stats.totalChars)
@@ -35,8 +37,7 @@ class CopyStatsTest {
 
     @Test
     fun `empty content adds zeros`() {
-        val stats = CopyStats()
-        stats.add("")
+        val stats = CopyStats().plus("")
         assertEquals(0, stats.totalChars)
         assertEquals(0, stats.totalLines)
         assertEquals(0, stats.totalWords)

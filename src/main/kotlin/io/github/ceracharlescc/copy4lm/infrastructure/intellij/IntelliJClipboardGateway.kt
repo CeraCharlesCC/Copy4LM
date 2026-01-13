@@ -7,7 +7,7 @@ import java.awt.datatransfer.StringSelection
 /**
  * Implementation of [ClipboardGateway] for IntelliJ platform.
  */
-class IntelliJClipboardGateway : ClipboardGateway {
+internal class IntelliJClipboardGateway : ClipboardGateway {
     override fun copy(text: String) {
         CopyPasteManager.getInstance().setContents(StringSelection(text))
     }

@@ -1,12 +1,12 @@
-package io.github.ceracharlescc.copy4lm.domain
+package io.github.ceracharlescc.copy4lm.domain.vo
 
 /**
  * Domain options for the copy operation.
  */
-data class CopyOptions(
-    val headerFormat: String = "```\$FILE_PATH",
+internal data class CopyOptions(
+    val headerFormat: String = $$"```$FILE_PATH",
     val footerFormat: String = "```",
-    val preText: String = "",
+    val preText: String = $$"=====\n$PROJECT_NAME\n=====\n",
     val postText: String = "",
     val fileCountLimit: Int = 30,
     val setMaxFileCount: Boolean = true,
@@ -14,5 +14,6 @@ data class CopyOptions(
     val useFilenameFilters: Boolean = false,
     val addExtraLineBetweenFiles: Boolean = true,
     val strictMemoryRead: Boolean = true,
-    val maxFileSizeKB: Int = 500
+    val maxFileSizeKB: Int = 500,
+    val projectName: String = ""
 )

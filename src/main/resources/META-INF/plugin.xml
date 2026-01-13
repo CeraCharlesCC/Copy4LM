@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <version>0.1.1</version>
+    <version>0.2.0</version>
 
     <id>io.github.ceracharlescc.copy4lm</id>
     <depends>com.intellij.modules.platform</depends>
@@ -11,7 +11,7 @@
 
     <!-- https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html -->
     <description><![CDATA[
-    <p>The "Copy 4 LM" plugin enhances your workflow by allowing you to quickly copy the contents of selected files and directories to the clipboard, formatted according to customizable settings.</p>
+    <p>Copy4LM is a plugin that enables quick copying of selected file or directory contents to the clipboard in a customizable format tailored for LLMs (Large Language Models), allowing for rapid contextualization of any part of a codebase.</p>
     <h2>This plugin is useful for:</h2>
     <ul>
         <li>Developers who frequently need to share their code via chat applications.</li>
@@ -25,7 +25,7 @@
         <li>Optional file extension filters to specify which files should be copied.</li>
         <li>Information on the copied items, including the number of files copied, total lines, total words, and an estimate of tokens (considering words and punctuation).</li>
     </ul>
-    <h2>Credits</h3>
+    <h2>Credits</h2>
     <p>This plugin is based on mwguerra's copy-file-content (under MIT License) plugin, available at: <a href="https://github.com/mwguerra/copy-file-content/">here</a>. Thank you mwguerra for the inspiration and foundation!</p>
     ]]>
     </description>
@@ -45,12 +45,27 @@
     </change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="Copy File Content" displayType="BALLOON" isLogByDefault="true" />
+        <notificationGroup id="Copy 4 LM" displayType="BALLOON" isLogByDefault="true" />
 
+        <!-- Parent configurable -->
+        <projectConfigurable
+            id="Copy4LMConfigurable"
+            displayName="Copy 4 LM Settings"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.Copy4LMConfigurable"/>
+
+        <!-- Child: Copy File Content to Clipboard -->
         <projectConfigurable
             id="CopyFileContentConfigurable"
-            displayName="Copy File Content Settings"
-            instance="io.github.ceracharlescc.copy4lm.ui.CopyFileContentConfigurable"/>
+            parentId="Copy4LMConfigurable"
+            displayName="Copy File Content to Clipboard"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyFileContentConfigurable"/>
+
+        <!-- Child: Copy Directory Structure to Clipboard -->
+        <projectConfigurable
+            id="CopyDirectoryStructureConfigurable"
+            parentId="Copy4LMConfigurable"
+            displayName="Copy Directory Structure to Clipboard"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyDirectoryStructureConfigurable"/>
     </extensions>
     <actions>
         <!-- For general IntelliJ IDEs -->
@@ -66,6 +81,12 @@
                 description="Copy the content of all open editor tabs to the clipboard.">
             <add-to-group group-id="EditorTabPopupMenu" anchor="after" relative-to-action="CopyPaths"/>
         </action>
+        <action id="CopyDirectoryStructureAction"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyDirectoryStructureAction"
+                text="Copy Directory Structure to Clipboard"
+                description="Copy a tree view of selected directories/files to the clipboard.">
+            <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyFileContentContentsAction"/>
+        </action>
 
         <!-- For Rider -->
         <action id="CopyFileContentContentsActionRider"
@@ -73,6 +94,12 @@
                 text="Copy File Content to Clipboard"
                 description="Copy folder and file content to the clipboard.">
             <add-to-group group-id="CopyReferencePopupGroup" anchor="after" relative-to-action="CopyPaths"/>
+        </action>
+        <action id="CopyDirectoryStructureActionRider"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyDirectoryStructureAction"
+                text="Copy Directory Structure to Clipboard"
+                description="Copy a tree view of selected directories/files to the clipboard.">
+            <add-to-group group-id="CopyReferencePopupGroup" anchor="after" relative-to-action="CopyFileContentContentsActionRider"/>
         </action>
     </actions>
 </idea-plugin>

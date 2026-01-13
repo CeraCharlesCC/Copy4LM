@@ -7,7 +7,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import io.github.ceracharlescc.copy4lm.CopyFileContentService
 import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
-internal class CopyFileContentAction : AnAction() {
+internal class CopyDirectoryStructureAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: run {
@@ -29,6 +29,6 @@ internal class CopyFileContentAction : AnAction() {
             return
         }
 
-        CopyFileContentService.getInstance(project).copy(selectedFiles)
+        CopyFileContentService.getInstance(project).copyDirectoryStructure(selectedFiles)
     }
 }

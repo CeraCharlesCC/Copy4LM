@@ -1,12 +1,12 @@
 package io.github.ceracharlescc.copy4lm.application.usecase
-import io.github.ceracharlescc.copy4lm.domain.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.testsupport.CapturingLogger
 import io.github.ceracharlescc.copy4lm.testsupport.FakeFileGateway
 import io.github.ceracharlescc.copy4lm.testsupport.FakeFileRef
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class CopyFilesUseCaseTest {
+internal class CopyFilesUseCaseTest {
 
     @Test
     fun `copies files recursively from directories, formats headers and footers, builds stats`() {
@@ -25,8 +25,8 @@ class CopyFilesUseCaseTest {
         val useCase = CopyFilesUseCase(gateway, logger)
 
         val options = CopyOptions(
-            headerFormat = "H:\$FILE_PATH",
-            footerFormat = "F:\$FILE_PATH",
+            headerFormat = $$"H:$FILE_PATH",
+            footerFormat = $$"F:$FILE_PATH",
             preText = "PRE",
             postText = "POST",
             addExtraLineBetweenFiles = true,
@@ -85,8 +85,8 @@ class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a, b),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 useFilenameFilters = false,
                 maxFileSizeKB = 500
             )
@@ -139,8 +139,8 @@ class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(kt, txt),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 useFilenameFilters = true,
                 filenameFilters = listOf(".kt")
             )
@@ -165,8 +165,8 @@ class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a1, a2),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH"
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH"
             )
         )
 
@@ -191,8 +191,8 @@ class CopyFilesUseCaseTest {
         val result = useCase.execute(
             files = listOf(a, b),
             options = CopyOptions(
-                headerFormat = "H:\$FILE_PATH",
-                footerFormat = "F:\$FILE_PATH",
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
                 setMaxFileCount = true,
                 fileCountLimit = 1
             )

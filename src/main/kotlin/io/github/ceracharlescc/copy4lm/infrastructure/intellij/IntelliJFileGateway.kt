@@ -23,7 +23,7 @@ class VirtualFileRef(val virtualFile: VirtualFile) : FileRef {
  * IntelliJ adapter for FileGateway port.
  * Wraps VirtualFile, FileTypeManager, FileDocumentManager, etc.
  */
-class IntelliJFileGateway(
+internal class IntelliJFileGateway(
     private val project: Project,
     private val repositoryRoot: VirtualFile?,
     private val logger: Logger

@@ -2,7 +2,7 @@
 
 ## Description
 <!-- Plugin description -->
-Copy4LM is a plugin that enhances your workflow by allowing you to quickly copy the contents of selected files and directories to the clipboard, formatted according to customizable settings.
+Copy4LM is a plugin that enables quick copying of selected file or directory contents to the clipboard in a customizable format tailored for LLMs (Large Language Models), allowing for rapid contextualization of any part of a codebase.
 <!-- Plugin description end -->
 
 <div align="center">

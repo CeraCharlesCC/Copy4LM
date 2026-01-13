@@ -7,9 +7,9 @@ import com.intellij.notification.NotificationType
 import com.intellij.openapi.options.ShowSettingsUtil
 import com.intellij.openapi.project.Project
 
-object NotificationUtil {
-    private const val GROUP_ID = "Copy File Content"
-    private const val SETTINGS_NAME = "Copy File Content Settings"
+internal object NotificationUtil {
+    private const val GROUP_ID = "Copy 4 LM"
+    private const val SETTINGS_NAME = "Copy 4 LM Settings"
 
     fun show(project: Project?, message: String, type: NotificationType): Notification {
         val group = NotificationGroupManager.getInstance().getNotificationGroup(GROUP_ID)

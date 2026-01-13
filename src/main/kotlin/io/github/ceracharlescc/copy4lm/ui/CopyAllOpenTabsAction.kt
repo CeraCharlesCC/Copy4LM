@@ -7,7 +7,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import io.github.ceracharlescc.copy4lm.CopyFileContentService
 import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
-class CopyAllOpenTabsAction : AnAction() {
+internal class CopyAllOpenTabsAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
