@@ -14,5 +14,6 @@ data class CopyOptions(
     val useFilenameFilters: Boolean = false,
     val addExtraLineBetweenFiles: Boolean = true,
     val strictMemoryRead: Boolean = true,
-    val maxFileSizeKB: Int = 500
+    val maxFileSizeKB: Int = 500,
+    val projectName: String = ""
 )
