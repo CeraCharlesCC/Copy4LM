@@ -1,5 +1,6 @@
 package io.github.ceracharlescc.copy4lm.domain.service
 
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 internal class FormattingTest {
@@ -11,6 +12,6 @@ internal class FormattingTest {
 
         val placeholderTemplate = $$"Project: $PROJECT_NAME, File: $FILE_PATH"
         val placeholderResult = PlaceholderFormatter.format(placeholderTemplate, projectName, filePath)
-        assert(placeholderResult == "Project: MyProject, File: src/Main.kt")
+        assertEquals("Project: MyProject, File: src/Main.kt", placeholderResult)
     }
 }
