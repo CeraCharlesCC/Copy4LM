@@ -6,7 +6,7 @@ package io.github.ceracharlescc.copy4lm.domain
 data class CopyOptions(
     val headerFormat: String = $$"```$FILE_PATH",
     val footerFormat: String = "```",
-    val preText: String = $$"=====\n$PROJECT_NAME\n=====",
+    val preText: String = $$"=====\n$PROJECT_NAME\n=====\n",
     val postText: String = "",
     val fileCountLimit: Int = 30,
     val setMaxFileCount: Boolean = true,
