@@ -1,3 +1,10 @@
+## [0.2.1] - 2026-01-13
+### ⚠️ Breaking changes
+- Drop support for IntelliJ IDEA 2022.3; minimum supported version is now 2023.3.
+
+### Internal
+- Bump version to 0.2.1.
+
 ## [0.2.0] - 2026-01-13
 
 ### ⚠️ Breaking changes
