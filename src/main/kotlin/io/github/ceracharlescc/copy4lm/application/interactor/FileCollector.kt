@@ -16,7 +16,7 @@ internal class FileCollector(
     fun collect(files: List<FileRef>): CollectedFiles {
         val plannedFiles = collectPlannedFiles(files)
         return CollectedFiles(
-            relativePaths = plannedFiles.map { it.relativePath },
+            files = plannedFiles,
             fileLimitReached = fileLimitReached
         )
     }
@@ -91,8 +91,4 @@ internal class FileCollector(
         return fileGateway.sizeBytes(file) > maxBytes
     }
 
-    internal data class PlannedFile(
-        val fileRef: FileRef,
-        val relativePath: String
-    )
 }
