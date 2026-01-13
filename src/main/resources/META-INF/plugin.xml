@@ -11,7 +11,7 @@
 
     <!-- https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html -->
     <description><![CDATA[
-    <p>The "Copy 4 LM" plugin enhances your workflow by allowing you to quickly copy the contents of selected files and directories to the clipboard, formatted according to customizable settings.</p>
+    <p>Copy4LM is a plugin that enables quick copying of selected file or directory contents to the clipboard in a customizable format tailored for LLMs (Large Language Models), allowing for rapid contextualization of any part of a codebase.</p>
     <h2>This plugin is useful for:</h2>
     <ul>
         <li>Developers who frequently need to share their code via chat applications.</li>
