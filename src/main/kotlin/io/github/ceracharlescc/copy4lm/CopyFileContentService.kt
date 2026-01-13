@@ -6,7 +6,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import io.github.ceracharlescc.copy4lm.application.interactor.CopyFilesInteractor
+import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
 import io.github.ceracharlescc.copy4lm.domain.directory.DirectoryStructureBuilder
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJClipboardGateway
@@ -20,13 +20,12 @@ import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 internal class CopyFileContentService(private val project: Project) {
 
     private val logger = Logger.getInstance(CopyFileContentService::class.java)
-    private val clipboardGateway =
-        IntelliJClipboardGateway()
+    private val clipboardGateway = IntelliJClipboardGateway()
 
     fun copy(files: Array<VirtualFile>) {
         // Load settings
         val state = try {
-            CopyFileContentSettings.getInstance(project).state
+            Copy4LMSettings.getInstance(project).state
         } catch (_: Throwable) {
             NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
             return
@@ -34,14 +33,14 @@ internal class CopyFileContentService(private val project: Project) {
 
         // Resolve repository root
         val repoRoot = ProjectRootManager.getInstance(project).contentRoots.firstOrNull()
+        val projectName = repoRoot?.name ?: project.name
 
         // Build adapters
         val fileGateway = IntelliJFileGateway(project, repoRoot, logger)
         val loggerPort = IntelliJLoggerAdapter(logger)
 
         // Map settings to domain options
-        val options = IntelliJSettingsMapper.toCopyOptions(state)
-            .copy(projectName = repoRoot?.name ?: project.name)
+        val options = IntelliJSettingsMapper.toCopyOptions(state, projectName)
 
         // Convert VirtualFiles to FileRefs
         val fileRefs = IntelliJFileGateway.toFileRefs(files)
@@ -57,13 +56,13 @@ internal class CopyFileContentService(private val project: Project) {
         if (result.fileLimitReached) {
             val msg = """
                 <html>
-                <b>File Limit Reached:</b> The file limit of ${state.fileCountLimit} files was reached.
+                <b>File Limit Reached:</b> The file limit of ${state.common.fileCountLimit} files was reached.
                 </html>
             """.trimIndent()
             NotificationUtil.showWithSettingsAction(project, msg, NotificationType.WARNING)
         }
 
-        if (state.showCopyNotification) {
+        if (state.common.showCopyNotification) {
             val fileCountMessage =
                 if (result.copiedFileCount == 1) "1 file copied." else "${result.copiedFileCount} files copied."
 
@@ -85,7 +84,7 @@ internal class CopyFileContentService(private val project: Project) {
     fun copyDirectoryStructure(files: Array<VirtualFile>) {
         // Load settings
         val state = try {
-            CopyFileContentSettings.getInstance(project).state
+            Copy4LMSettings.getInstance(project).state
         } catch (_: Throwable) {
             NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
             return
@@ -93,45 +92,55 @@ internal class CopyFileContentService(private val project: Project) {
 
         // Resolve repository root
         val repoRoot = ProjectRootManager.getInstance(project).contentRoots.firstOrNull()
+        val projectName = repoRoot?.name ?: project.name
 
         // Build adapters
         val fileGateway = IntelliJFileGateway(project, repoRoot, logger)
         val loggerPort = IntelliJLoggerAdapter(logger)
 
-        // Map settings to domain options (use same filters/limits for consistency)
-        val options = IntelliJSettingsMapper.toCopyOptions(state)
-            .copy(projectName = repoRoot?.name ?: project.name)
+        // Map settings to file collection options
+        val collectionOptions = IntelliJSettingsMapper.toFileCollectionOptions(state)
 
         // Convert VirtualFiles to FileRefs
         val fileRefs = IntelliJFileGateway.toFileRefs(files)
 
-        // Collect file paths using same logic as copy
-        val interactor = CopyFilesInteractor(fileGateway, loggerPort, options)
-        val collected = interactor.collectFilePaths(fileRefs)
+        // Collect file paths using FileCollector
+        val collector = FileCollector(fileGateway, loggerPort, collectionOptions)
+        val collected = collector.collect(fileRefs)
 
         // Build directory structure
         val directoryStructure = DirectoryStructureBuilder.build(
-            rootName = repoRoot?.name ?: project.name,
+            rootName = projectName,
             relativePaths = collected.relativePaths
         )
 
-        // Copy to clipboard
-        clipboardGateway.copy(directoryStructure)
-
-        // Show notification
-        NotificationUtil.show(
-            project,
-            "<html><b>Directory structure copied.</b></html>",
-            NotificationType.INFORMATION
+        // Format the final text with pre/post text
+        val finalText = IntelliJSettingsMapper.formatDirectoryStructureText(
+            state = state,
+            projectName = projectName,
+            directoryStructure = directoryStructure
         )
 
+        // Copy to clipboard
+        clipboardGateway.copy(finalText)
+
+        // Handle notifications
         if (collected.fileLimitReached) {
             val msg = """
                 <html>
-                <b>File Limit Reached:</b> The file limit of ${state.fileCountLimit} files was reached.
+                <b>File Limit Reached:</b> The file limit of ${state.common.fileCountLimit} files was reached.
                 </html>
             """.trimIndent()
             NotificationUtil.showWithSettingsAction(project, msg, NotificationType.WARNING)
+        }
+
+        // Show notification if enabled
+        if (state.common.showCopyNotification) {
+            NotificationUtil.show(
+                project,
+                "<html><b>Directory structure copied.</b></html>",
+                NotificationType.INFORMATION
+            )
         }
     }
 

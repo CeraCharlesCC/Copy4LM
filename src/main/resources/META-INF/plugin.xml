@@ -45,12 +45,27 @@
     </change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="Copy File Content" displayType="BALLOON" isLogByDefault="true" />
+        <notificationGroup id="Copy 4 LM" displayType="BALLOON" isLogByDefault="true" />
 
+        <!-- Parent configurable -->
+        <projectConfigurable
+            id="Copy4LMConfigurable"
+            displayName="Copy 4 LM Settings"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.Copy4LMConfigurable"/>
+
+        <!-- Child: Copy File Content to Clipboard -->
         <projectConfigurable
             id="CopyFileContentConfigurable"
-            displayName="Copy File Content Settings"
-            instance="io.github.ceracharlescc.copy4lm.ui.CopyFileContentConfigurable"/>
+            parentId="Copy4LMConfigurable"
+            displayName="Copy File Content to Clipboard"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyFileContentConfigurable"/>
+
+        <!-- Child: Copy Directory Structure to Clipboard -->
+        <projectConfigurable
+            id="CopyDirectoryStructureConfigurable"
+            parentId="Copy4LMConfigurable"
+            displayName="Copy Directory Structure to Clipboard"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyDirectoryStructureConfigurable"/>
     </extensions>
     <actions>
         <!-- For general IntelliJ IDEs -->
