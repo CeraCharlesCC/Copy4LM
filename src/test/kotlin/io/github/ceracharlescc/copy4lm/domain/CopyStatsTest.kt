@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.domain
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class CopyStatsTest {
+internal class CopyStatsTest {
 
     @Test
     fun `add accumulates chars, lines, words, tokens`() {

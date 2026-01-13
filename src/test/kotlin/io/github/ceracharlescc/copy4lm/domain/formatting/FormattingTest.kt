@@ -2,7 +2,7 @@ package io.github.ceracharlescc.copy4lm.domain.formatting
 
 import org.junit.jupiter.api.Test
 
-class FormattingTest {
+internal class FormattingTest {
 
     @Test
     fun `formatter replaces placeholders correctly`() {

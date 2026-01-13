@@ -6,7 +6,7 @@ import io.github.ceracharlescc.copy4lm.testsupport.FakeFileRef
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
-class CopyFilesUseCaseTest {
+internal class CopyFilesUseCaseTest {
 
     @Test
     fun `copies files recursively from directories, formats headers and footers, builds stats`() {

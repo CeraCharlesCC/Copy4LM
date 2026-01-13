@@ -4,13 +4,13 @@ import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 
-data class FakeFileRef(
+internal data class FakeFileRef(
     override val name: String,
     override val path: String,
     override val isDirectory: Boolean = false
 ) : FileRef
 
-class FakeFileGateway(
+internal class FakeFileGateway(
     private val children: Map<String, List<FakeFileRef>> = emptyMap(),
     private val contents: Map<String, String> = emptyMap(),
     private val binaryPaths: Set<String> = emptySet(),
