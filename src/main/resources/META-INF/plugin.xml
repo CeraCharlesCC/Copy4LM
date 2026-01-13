@@ -25,7 +25,7 @@
         <li>Optional file extension filters to specify which files should be copied.</li>
         <li>Information on the copied items, including the number of files copied, total lines, total words, and an estimate of tokens (considering words and punctuation).</li>
     </ul>
-    <h2>Credits</h3>
+    <h2>Credits</h2>
     <p>This plugin is based on mwguerra's copy-file-content (under MIT License) plugin, available at: <a href="https://github.com/mwguerra/copy-file-content/">here</a>. Thank you mwguerra for the inspiration and foundation!</p>
     ]]>
     </description>
