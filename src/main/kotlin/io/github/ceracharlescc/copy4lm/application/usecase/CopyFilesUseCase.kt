@@ -21,8 +21,8 @@ private class CopyRunner(
     private val options: CopyOptions
 ) {
     private val textBuilder = ClipboardTextBuilder(
-        preText = options.preText,
-        postText = options.postText,
+        preText = PlaceholderFormatter.format(options.preText, options.projectName),
+        postText = PlaceholderFormatter.format(options.postText, options.projectName),
         addExtraLineBetweenFiles = options.addExtraLineBetweenFiles
     )
     private val seenRelativePaths = mutableSetOf<String>()
@@ -78,15 +78,14 @@ private class CopyRunner(
 
         val relativePath = fileGateway.relativePath(file)
 
-        // Skip already copied files
         if (!seenRelativePaths.add(relativePath)) {
             logger.info("Skipping already copied file: $relativePath")
             return
         }
 
         val content = fileGateway.readText(file, options.strictMemoryRead)
-        val header = HeaderFormatter.format(options.headerFormat, relativePath)
-        val footer = FooterFormatter.format(options.footerFormat, relativePath)
+        val header = PlaceholderFormatter.format(options.headerFormat, options.projectName, relativePath)
+        val footer = PlaceholderFormatter.format(options.footerFormat, options.projectName, relativePath)
 
         textBuilder.addFile(header, content, footer)
         copiedFileCount++
