@@ -39,6 +39,7 @@ class CopyFileContentService(private val project: Project) {
 
         // Map settings to domain options
         val options = IntelliJSettingsMapper.toCopyOptions(state)
+            .copy(projectName = project.name)
 
         // Convert VirtualFiles to FileRefs
         val fileRefs = IntelliJFileGateway.toFileRefs(files)
