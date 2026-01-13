@@ -4,7 +4,7 @@ package io.github.ceracharlescc.copy4lm.domain
  * Domain options for the copy operation.
  */
 data class CopyOptions(
-    val headerFormat: String = "```\$FILE_PATH",
+    val headerFormat: String = $$"```$FILE_PATH",
     val footerFormat: String = "```",
     val preText: String = "",
     val postText: String = "",
