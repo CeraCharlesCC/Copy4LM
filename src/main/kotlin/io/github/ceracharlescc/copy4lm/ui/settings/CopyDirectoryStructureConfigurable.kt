@@ -33,7 +33,7 @@ internal class CopyDirectoryStructureConfigurable(private val project: Project) 
                 panel.add(explanationLabel)
 
                 val placeholderHelpLabel = JLabel(
-                    "<html><small>Available placeholders: <code>\$PROJECT_NAME</code>, <code>\$DIRECTORY_STRUCTURE</code></small></html>"
+                    $$"<html><small>Available placeholders: <code>$PROJECT_NAME</code>, <code>$DIRECTORY_STRUCTURE</code></small></html>"
                 )
                 placeholderHelpLabel.border = JBUI.Borders.emptyBottom(8)
                 panel.add(placeholderHelpLabel)
