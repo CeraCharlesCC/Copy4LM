@@ -6,16 +6,6 @@ import org.junit.jupiter.api.Test
 class FormattingTest {
 
     @Test
-    fun `header formatter replaces FILE_PATH`() {
-        assertEquals("```src/A.kt", HeaderFormatter.format("```\$FILE_PATH", "src/A.kt"))
-    }
-
-    @Test
-    fun `footer formatter replaces FILE_PATH`() {
-        assertEquals("END src/A.kt", FooterFormatter.format("END \$FILE_PATH", "src/A.kt"))
-    }
-
-    @Test
     fun `clipboard builder applies pre post and extra line between files`() {
         val b = ClipboardTextBuilder(
             preText = "PRE",

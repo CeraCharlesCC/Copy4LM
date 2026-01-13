@@ -7,7 +7,7 @@ import io.github.ceracharlescc.copy4lm.domain.ClipboardTextBuilder
 import io.github.ceracharlescc.copy4lm.domain.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.CopyStats
-import io.github.ceracharlescc.copy4lm.domain.PlaceholderFormatter
+import io.github.ceracharlescc.copy4lm.domain.formatting.PlaceholderFormatter
 
 internal class CopyFilesInteractor(
     private val fileGateway: FileGateway,
