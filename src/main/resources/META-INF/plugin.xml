@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
 
     <id>io.github.ceracharlescc.copy4lm</id>
     <depends>com.intellij.modules.platform</depends>
