@@ -32,14 +32,14 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.2.1 Changes:</h3>
-        <h4>⚠️ Breaking changes</h4>
+        <h3>Version 0.2.2 Changes:</h3>
+        <h4>Changed</h4>
         <ul>
-        <li>Drop support for IntelliJ IDEA 2022.3; minimum supported version is now 2023.3.</li>
+        <li>Update plugin icons with &#x27;LLM&#x27; branding and visual elements.</li>
         </ul>
-        <h4>Internal</h4>
+        <h4>Documentation</h4>
         <ul>
-        <li>Bump version to 0.2.1.</li>
+        <li>Update README with plugin name, description, and credits.</li>
         </ul>
         ]]>
     </change-notes>
