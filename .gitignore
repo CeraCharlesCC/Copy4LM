@@ -12,8 +12,20 @@
 !common/
 !common/**
 
+!intellij/
+!intellij/**
+
+!vscode/
+!vscode/**
+
 common/build/
 common/build/**
+
+intellij/build/
+intellij/build/**
+
+vscode/build/
+vscode/build/**
 
 !gradle/
 !gradle/**
