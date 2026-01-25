@@ -8,36 +8,22 @@ This is an IntelliJ IDEA plugin called "Copy File Content" that allows users to 
 
 ## Build & Development Commands
 
-### Running the Plugin in Development
+### Running the Plugin in Development for IntelliJ
 ```bash
-./gradlew runIde
+./gradlew intellij:runIde
 ```
 This launches a sandboxed IDE instance with the plugin installed for testing.
 
-### Building the Plugin
+### Building the Plugin for IntelliJ
 ```bash
-./gradlew build
+./gradlew intellij:buildPlugin
 ```
 The distributable ZIP file will be created at: `build/distributions/Copy_File_Content-{version}.zip`
 
-### Running Tests
-```bash
-./gradlew test
-```
+### 
 
-### Code Coverage
 ```bash
-./gradlew koverHtmlReport
-```
 
-### Running UI Tests
-```bash
-./gradlew runIdeForUiTests
-```
-
-### Test build
-```bash
-./gradlew buildPlugin
 ```
 
 ### Plugin Configuration

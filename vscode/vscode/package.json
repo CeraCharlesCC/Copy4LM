@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "copy4lm-vscode": "file:.."
+  }
+}
