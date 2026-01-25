@@ -33,7 +33,7 @@ external interface JsFileGateway {
 @JsExport
 external interface JsLogger {
     fun info(message: String)
-    fun error(message: String, throwable: String? = null)
+    fun error(message: String, throwable: String? = definedExternally)
 }
 
 @JsExport
@@ -50,7 +50,45 @@ data class JsCopyOptions(
     val strictMemoryRead: Boolean = DEFAULT_COPY_OPTIONS.strictMemoryRead,
     val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
     val projectName: String = DEFAULT_COPY_OPTIONS.projectName
-)
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class.js != other::class.js) return false
+
+        other as JsCopyOptions
+
+        if (fileCountLimit != other.fileCountLimit) return false
+        if (setMaxFileCount != other.setMaxFileCount) return false
+        if (useFilenameFilters != other.useFilenameFilters) return false
+        if (addExtraLineBetweenFiles != other.addExtraLineBetweenFiles) return false
+        if (strictMemoryRead != other.strictMemoryRead) return false
+        if (maxFileSizeKB != other.maxFileSizeKB) return false
+        if (headerFormat != other.headerFormat) return false
+        if (footerFormat != other.footerFormat) return false
+        if (preText != other.preText) return false
+        if (postText != other.postText) return false
+        if (!filenameFilters.contentEquals(other.filenameFilters)) return false
+        if (projectName != other.projectName) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = fileCountLimit
+        result = 31 * result + setMaxFileCount.hashCode()
+        result = 31 * result + useFilenameFilters.hashCode()
+        result = 31 * result + addExtraLineBetweenFiles.hashCode()
+        result = 31 * result + strictMemoryRead.hashCode()
+        result = 31 * result + maxFileSizeKB
+        result = 31 * result + headerFormat.hashCode()
+        result = 31 * result + footerFormat.hashCode()
+        result = 31 * result + preText.hashCode()
+        result = 31 * result + postText.hashCode()
+        result = 31 * result + filenameFilters.contentHashCode()
+        result = 31 * result + projectName.hashCode()
+        return result
+    }
+}
 
 @JsExport
 data class JsCopyStats(
@@ -123,7 +161,7 @@ private object NoopLogger : LoggerPort {
     override fun error(message: String, throwable: Throwable?) = Unit
 }
 
-private class JsFileRefAdapter(private val delegate: JsFileRef) : FileRef {
+private class JsFileRefAdapter(val delegate: JsFileRef) : FileRef {
     override val name: String
         get() = delegate.name
     override val path: String
