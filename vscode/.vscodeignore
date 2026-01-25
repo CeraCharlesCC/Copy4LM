@@ -1,0 +1,5 @@
+.vscode/**
+src/**
+.vscodeignore
+esbuild.config.mjs
+tsconfig.json

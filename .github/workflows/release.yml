@@ -206,6 +206,20 @@ jobs:
           set -euo pipefail
           ./gradlew --no-daemon buildPlugin
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Build VS Code extension
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./gradlew --no-daemon :common:jsProductionLibraryDistribution
+          npm --prefix vscode install
+          npm --prefix vscode run build
+          npm --prefix vscode run package
+
       - name: Locate zip artifact
         id: zip
         shell: bash
@@ -220,6 +234,20 @@ jobs:
           echo "zip_path=$ZIP" >> "$GITHUB_OUTPUT"
           echo "zip_name=$(basename "$ZIP")" >> "$GITHUB_OUTPUT"
 
+      - name: Locate VS Code vsix artifact
+        id: vsix
+        shell: bash
+        run: |
+          set -euo pipefail
+          VSIX="$(ls -1 vscode/*.vsix 2>/dev/null | head -n 1 || true)"
+          if [ -z "$VSIX" ]; then
+            echo "No vsix found in vscode/" >&2
+            ls -la vscode >&2 || true
+            exit 1
+          fi
+          echo "vsix_path=$VSIX" >> "$GITHUB_OUTPUT"
+          echo "vsix_name=$(basename "$VSIX")" >> "$GITHUB_OUTPUT"
+
       - name: Compute checksums
         id: sums
         shell: bash
@@ -227,7 +255,10 @@ jobs:
           set -euo pipefail
           ZIP="${{ steps.zip.outputs.zip_path }}"
           sha256sum "$ZIP" | tee "${{ steps.zip.outputs.zip_name }}.sha256"
+          VSIX="${{ steps.vsix.outputs.vsix_path }}"
+          sha256sum "$VSIX" | tee "${{ steps.vsix.outputs.vsix_name }}.sha256"
           echo "sha_file=${{ steps.zip.outputs.zip_name }}.sha256" >> "$GITHUB_OUTPUT"
+          echo "vsix_sha_file=${{ steps.vsix.outputs.vsix_name }}.sha256" >> "$GITHUB_OUTPUT"
 
       - name: Attest build provenance (GitHub Artifact Attestations)
         uses: actions/attest-build-provenance@v1
@@ -283,3 +314,4 @@ jobs:
           fi
 
           gh release upload "$TAG" "$ZIP" "$SHA" --clobber
+          gh release upload "$TAG" "${{ steps.vsix.outputs.vsix_path }}" "${{ steps.sums.outputs.vsix_sha_file }}" --clobber

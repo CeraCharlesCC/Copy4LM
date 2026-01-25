@@ -41,3 +41,9 @@ kotlin {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
+
+tasks.register("jsNodeDist") {
+    group = "distribution"
+    description = "Builds the Node-compatible Kotlin/JS distribution."
+    dependsOn("jsProductionLibraryDistribution")
+}

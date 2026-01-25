@@ -1,0 +1,173 @@
+{
+  "name": "copy4lm-vscode",
+  "displayName": "Copy 4 LM",
+  "description": "Copy file contents and directory structure for LLM prompts.",
+  "version": "0.2.2",
+  "publisher": "ceracharlescc",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/CeraCharlesCC/Copy4LM"
+  },
+  "engines": {
+    "vscode": "^1.86.0"
+  },
+  "categories": [
+    "Productivity",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:copy4lm.copySelection",
+    "onCommand:copy4lm.copyOpenEditors",
+    "onCommand:copy4lm.copyDirectoryStructure",
+    "onCommand:copy4lm.copyCurrentFile"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "copy4lm.copySelection",
+        "title": "Copy for LLM (contents)",
+        "category": "Copy 4 LM"
+      },
+      {
+        "command": "copy4lm.copyOpenEditors",
+        "title": "Copy for LLM (open editors)",
+        "category": "Copy 4 LM"
+      },
+      {
+        "command": "copy4lm.copyDirectoryStructure",
+        "title": "Copy for LLM (tree)",
+        "category": "Copy 4 LM"
+      },
+      {
+        "command": "copy4lm.copyCurrentFile",
+        "title": "Copy current file for LLM",
+        "category": "Copy 4 LM"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "copy4lm.copySelection",
+          "group": "navigation@11"
+        },
+        {
+          "command": "copy4lm.copyDirectoryStructure",
+          "group": "navigation@12"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "copy4lm.copyCurrentFile",
+          "group": "navigation@11"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "copy4lm.copySelection"
+        },
+        {
+          "command": "copy4lm.copyOpenEditors"
+        },
+        {
+          "command": "copy4lm.copyDirectoryStructure"
+        },
+        {
+          "command": "copy4lm.copyCurrentFile"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Copy 4 LM",
+      "properties": {
+        "copy4lm.common.fileCountLimit": {
+          "type": "number",
+          "default": 30,
+          "minimum": 1,
+          "description": "Maximum number of files to copy."
+        },
+        "copy4lm.common.setMaxFileCount": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enforce the file count limit."
+        },
+        "copy4lm.common.maxFileSizeKB": {
+          "type": "number",
+          "default": 500,
+          "minimum": 1,
+          "description": "Maximum file size (KB) to copy."
+        },
+        "copy4lm.common.useFilenameFilters": {
+          "type": "boolean",
+          "default": false,
+          "description": "Only include files that match the filename filters."
+        },
+        "copy4lm.common.filenameFilters": {
+          "type": "array",
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "description": "File suffixes to include (for example: .kt, .ts)."
+        },
+        "copy4lm.common.strictMemoryRead": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use the in-memory editor contents when a file is open."
+        },
+        "copy4lm.fileContent.headerFormat": {
+          "type": "string",
+          "default": "```$FILE_PATH",
+          "description": "Header template for each file."
+        },
+        "copy4lm.fileContent.footerFormat": {
+          "type": "string",
+          "default": "```",
+          "description": "Footer template for each file."
+        },
+        "copy4lm.fileContent.preText": {
+          "type": "string",
+          "default": "=====\n$PROJECT_NAME\n=====\n",
+          "description": "Text placed before all copied file contents."
+        },
+        "copy4lm.fileContent.postText": {
+          "type": "string",
+          "default": "",
+          "description": "Text placed after all copied file contents."
+        },
+        "copy4lm.fileContent.addExtraLineBetweenFiles": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add a blank line between files."
+        },
+        "copy4lm.directoryStructure.preText": {
+          "type": "string",
+          "default": "",
+          "description": "Text placed before the directory structure output."
+        },
+        "copy4lm.directoryStructure.postText": {
+          "type": "string",
+          "default": "",
+          "description": "Text placed after the directory structure output."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node esbuild.config.mjs",
+    "watch": "node esbuild.config.mjs --watch",
+    "typecheck": "tsc --noEmit",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.30",
+    "@types/vscode": "^1.86.0",
+    "@vscode/vsce": "^2.25.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "copy4lm-common": "file:../common/build/dist/js/productionLibrary"
+  }
+}

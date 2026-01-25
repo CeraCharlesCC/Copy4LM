@@ -26,6 +26,11 @@ intellij/build/**
 
 vscode/build/
 vscode/build/**
+vscode/dist/
+vscode/dist/**
+vscode/node_modules/
+vscode/node_modules/**
+vscode/*.vsix
 
 !gradle/
 !gradle/**

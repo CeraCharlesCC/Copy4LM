@@ -2,14 +2,17 @@
 
 package io.github.ceracharlescc.copy4lm
 
+import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
 import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
+import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
+import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
 import kotlin.js.JsExport
 
 private val DEFAULT_COPY_OPTIONS = CopyOptions()
@@ -107,6 +110,24 @@ data class JsCopyResult(
 )
 
 @JsExport
+data class JsDirectoryStructureOptions(
+    val preText: String = "",
+    val postText: String = "",
+    val fileCountLimit: Int = DEFAULT_COPY_OPTIONS.fileCountLimit,
+    val setMaxFileCount: Boolean = DEFAULT_COPY_OPTIONS.setMaxFileCount,
+    val filenameFilters: Array<String> = DEFAULT_COPY_OPTIONS.filenameFilters.toTypedArray(),
+    val useFilenameFilters: Boolean = DEFAULT_COPY_OPTIONS.useFilenameFilters,
+    val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
+    val projectName: String = DEFAULT_COPY_OPTIONS.projectName
+)
+
+@JsExport
+data class JsDirectoryStructureResult(
+    val clipboardText: String,
+    val fileLimitReached: Boolean
+)
+
+@JsExport
 fun copyFiles(
     files: Array<JsFileRef>,
     options: JsCopyOptions,
@@ -118,6 +139,28 @@ fun copyFiles(
     val useCase = CopyFilesUseCase(fileGateway, loggerPort)
     val result = useCase.execute(files.map { JsFileRefAdapter(it) }, options.toCopyOptions())
     return result.toJsCopyResult()
+}
+
+@JsExport
+fun copyDirectoryStructure(
+    files: Array<JsFileRef>,
+    options: JsDirectoryStructureOptions,
+    gateway: JsFileGateway,
+    logger: JsLogger? = null
+): JsDirectoryStructureResult {
+    val fileGateway = JsFileGatewayAdapter(gateway)
+    val loggerPort = logger?.let { JsLoggerAdapter(it) } ?: NoopLogger
+    val collector = FileCollector(fileGateway, loggerPort, options.toFileCollectionOptions())
+    val collected = collector.collect(files.map { JsFileRefAdapter(it) })
+    val directoryStructure = DirectoryStructureBuilder.build(
+        rootName = options.projectName,
+        relativePaths = collected.relativePaths
+    )
+    val finalText = formatDirectoryStructureText(options, directoryStructure)
+    return JsDirectoryStructureResult(
+        clipboardText = finalText,
+        fileLimitReached = collected.fileLimitReached
+    )
 }
 
 @JsExport
@@ -155,6 +198,44 @@ private fun CopyStats.toJsCopyStats(): JsCopyStats =
         totalWords = totalWords,
         totalTokens = totalTokens
     )
+
+private fun JsDirectoryStructureOptions.toFileCollectionOptions(): FileCollectionOptions =
+    FileCollectionOptions(
+        fileCountLimit = fileCountLimit,
+        setMaxFileCount = setMaxFileCount,
+        filenameFilters = filenameFilters.toList(),
+        useFilenameFilters = useFilenameFilters,
+        maxFileSizeKB = maxFileSizeKB
+    )
+
+private fun formatDirectoryStructureText(
+    options: JsDirectoryStructureOptions,
+    directoryStructure: String
+): String {
+    val formattedPre = PlaceholderFormatter.format(
+        template = options.preText,
+        projectName = options.projectName,
+        directoryStructure = directoryStructure
+    )
+
+    val formattedPost = PlaceholderFormatter.format(
+        template = options.postText,
+        projectName = options.projectName,
+        directoryStructure = directoryStructure
+    )
+
+    return buildString {
+        if (formattedPre.isNotBlank()) {
+            append(formattedPre)
+            if (!formattedPre.endsWith("\n")) append("\n")
+        }
+        append(directoryStructure)
+        if (formattedPost.isNotBlank()) {
+            if (!directoryStructure.endsWith("\n")) append("\n")
+            append(formattedPost)
+        }
+    }
+}
 
 private object NoopLogger : LoggerPort {
     override fun info(message: String) = Unit
