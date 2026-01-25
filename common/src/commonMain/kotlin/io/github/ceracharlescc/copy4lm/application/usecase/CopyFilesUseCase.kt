@@ -9,7 +9,7 @@ import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.vo.toFileCollectionOptions
 
-internal class CopyFilesUseCase(
+class CopyFilesUseCase(
     private val fileGateway: FileGateway,
     private val logger: LoggerPort
 ) {

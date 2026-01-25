@@ -3,3 +3,4 @@ plugins {
 }
 
 rootProject.name = "copy4lm"
+include(":common")

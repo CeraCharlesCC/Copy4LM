@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.domain.vo
 /**
  * Options for file collection (shared constraints between file content copy and directory structure copy).
  */
-internal data class FileCollectionOptions(
+data class FileCollectionOptions(
     val fileCountLimit: Int = 30,
     val setMaxFileCount: Boolean = true,
     val filenameFilters: List<String> = emptyList(),

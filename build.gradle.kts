@@ -28,6 +28,7 @@ repositories {
 // Dependencies are managed with Gradle version catalog - read more: https://docs.gradle.org/current/userguide/platforms.html#sub:version-catalog
 dependencies {
 //  implementation(libs.annotations)
+    implementation(project(":common"))
     intellijPlatform {
         val platformType = properties("platformType")
         val platformVersion = properties("platformVersion")

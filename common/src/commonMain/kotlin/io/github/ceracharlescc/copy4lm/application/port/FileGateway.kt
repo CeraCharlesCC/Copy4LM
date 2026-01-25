@@ -3,7 +3,7 @@ package io.github.ceracharlescc.copy4lm.application.port
 /**
  * Abstract representation of a file in the file system.
  */
-internal interface FileRef {
+interface FileRef {
     val name: String
     val path: String
     val isDirectory: Boolean
@@ -12,7 +12,7 @@ internal interface FileRef {
 /**
  * Port for file system operations.
  */
-internal interface FileGateway {
+interface FileGateway {
     /**
      * Returns the children of a directory.
      */

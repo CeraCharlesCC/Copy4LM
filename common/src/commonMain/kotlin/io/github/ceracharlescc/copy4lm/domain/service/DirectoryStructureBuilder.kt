@@ -1,6 +1,6 @@
 package io.github.ceracharlescc.copy4lm.domain.service
 
-internal object DirectoryStructureBuilder {
+object DirectoryStructureBuilder {
 
     fun build(rootName: String, relativePaths: List<String>): String {
         if (relativePaths.isEmpty()) {

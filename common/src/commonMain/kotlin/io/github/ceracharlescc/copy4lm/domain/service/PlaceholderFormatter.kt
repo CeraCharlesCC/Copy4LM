@@ -2,7 +2,7 @@ package io.github.ceracharlescc.copy4lm.domain.service
 
 import io.github.ceracharlescc.copy4lm.domain.constant.Placeholders
 
-internal object PlaceholderFormatter {
+object PlaceholderFormatter {
     fun format(
         template: String,
         projectName: String,

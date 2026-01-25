@@ -7,7 +7,7 @@ import io.github.ceracharlescc.copy4lm.domain.vo.CollectedFiles
 import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.PlannedFile
 
-internal class FileCollector(
+class FileCollector(
     private val fileGateway: FileGateway,
     private val logger: LoggerPort,
     private val options: FileCollectionOptions

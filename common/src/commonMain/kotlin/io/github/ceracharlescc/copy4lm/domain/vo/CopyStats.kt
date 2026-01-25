@@ -5,7 +5,7 @@ import io.github.ceracharlescc.copy4lm.domain.service.TokenEstimator
 /**
  * Tracks statistics about copied file content.
  */
-internal data class CopyStats(
+data class CopyStats(
     val totalChars: Int = 0,
     val totalLines: Int = 0,
     val totalWords: Int = 0,
