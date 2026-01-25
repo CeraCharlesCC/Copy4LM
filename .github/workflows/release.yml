@@ -119,7 +119,7 @@ jobs:
           TAG="${{ inputs.releaseTag }}"
           VER="${TAG#v}"
 
-          PLUGIN_XML="src/main/resources/META-INF/plugin.xml"
+          PLUGIN_XML="intellij/src/main/resources/META-INF/plugin.xml"
           GRADLE_PROPERTIES="gradle.properties"
 
           # Update plugin.xml <version>
@@ -163,7 +163,7 @@ jobs:
           set -euo pipefail
           VER="${NEW_TAG#v}"
           python .github/workflows/script/update_plugin_change_notes.py \
-            --plugin-xml "src/main/resources/META-INF/plugin.xml" \
+            --plugin-xml "intellij/src/main/resources/META-INF/plugin.xml" \
             --changelog "${{ env.CHANGELOG_PATH }}" \
             --version "$VER"
 
@@ -173,7 +173,7 @@ jobs:
           set -euo pipefail
           TAG="${{ inputs.releaseTag }}"
           BRANCH="${{ steps.branch.outputs.branch }}"
-          PLUGIN_XML="src/main/resources/META-INF/plugin.xml"
+          PLUGIN_XML="intellij/src/main/resources/META-INF/plugin.xml"
 
           if git diff --quiet -- "${{ env.CHANGELOG_PATH }}" "$PLUGIN_XML"; then
             echo "No changelog/plugin.xml changes to commit."

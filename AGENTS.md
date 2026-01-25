@@ -42,7 +42,7 @@ The distributable ZIP file will be created at: `build/distributions/Copy_File_Co
 
 ### Plugin Configuration
 
-The plugin is configured in `src/main/resources/META-INF/plugin.xml`:
+The plugin is configured in `intellij/src/main/resources/META-INF/plugin.xml`:
 - Registers two actions: one for the file tree context menu, one for the editor tab context menu
 - Defines notification group for displaying messages
 - Plugin metadata (version, description, change notes) are maintained here
@@ -59,7 +59,7 @@ The plugin is configured in `src/main/resources/META-INF/plugin.xml`:
 ## Version Management
 
 The plugin version is maintained in two locations and must be kept in sync:
-- `src/main/resources/META-INF/plugin.xml` (`<version>` tag)
+- `intellij/src/main/resources/META-INF/plugin.xml` (`<version>` tag)
 - `gradle.properties` (`pluginVersion` property)
 
 The build process uses `gradle.properties` as the source of truth and patches `plugin.xml` during the build.

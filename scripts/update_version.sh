@@ -5,7 +5,7 @@ set -o pipefail
 set -o nounset
 
 # Global variables
-PLUGIN_XML="src/main/resources/META-INF/plugin.xml"
+PLUGIN_XML="intellij/src/main/resources/META-INF/plugin.xml"
 GRADLE_PROPERTIES="gradle.properties"
 
 # Function to display usage information
