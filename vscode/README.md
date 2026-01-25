@@ -36,7 +36,7 @@ Copy file contents or directory structure into the clipboard with LLM-friendly f
 Build the shared Kotlin/JS package first:
 
 ```
-./gradlew :common:jsProductionLibraryDistribution
+./gradlew :common:jsNodeProductionLibraryDistribution
 ```
 
 Then build the extension:
