@@ -1,10 +1,12 @@
+import com.github.gradle.node.npm.task.NpmInstallTask
+import com.github.gradle.node.npm.task.NpmTask
+import org.gradle.api.tasks.Copy
+import org.gradle.api.tasks.Delete
 import org.gradle.api.tasks.wrapper.Wrapper
-import org.gradle.api.tasks.Exec
-import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.register
 
 plugins {
     base
+    id("com.github.node-gradle.node") version "7.1.0"
 }
 
 tasks.named<Wrapper>("wrapper") {
@@ -48,31 +50,45 @@ tasks.register("signPlugin") {
 
 val vscodeDir = layout.projectDirectory.dir("vscode")
 
-// Convenience: all npm commands run with --prefix vscode (same pattern as scripts/build_vscode.sh) :contentReference[oaicite:3]{index=3}
-fun Exec.npm(vararg args: String) {
-    commandLine(listOf("npm", "--prefix", "vscode") + args)
+// Configure the Node plugin to run in vscode/ and to download a pinned Node version.
+node {
+    nodeProjectDir.set(vscodeDir.asFile)
+    download.set(true)
+    version.set(providers.gradleProperty("nodeVersion"))
+
+    // Default to "install" unless you explicitly set npmInstallCommand=ci in gradle.properties.
+    npmInstallCommand.set(providers.gradleProperty("npmInstallCommand").orElse("install"))
 }
 
-val vscodeNpmInstall = tasks.register<Exec>("vscodeNpmInstall") {
+// Configure the plugin-provided npmInstall task (runs in nodeProjectDir)
+val npmInstall = tasks.named<NpmInstallTask>("npmInstall") {
     group = "vscode"
-    description = "Installs VS Code extension dependencies (npm install)."
+    description = "Installs VS Code extension dependencies (npm install/ci) using plugin-managed Node."
 
     // The extension depends on the locally-built Kotlin/JS package:
     // "copy4lm-common": "file:../common/build/dist/js/productionLibrary" :contentReference[oaicite:4]{index=4}
     dependsOn(":common:jsNodeProductionLibraryDistribution") // matches the documented build order :contentReference[oaicite:5]{index=5}
 
+    inputs.dir(layout.projectDirectory.dir("common/build/dist/js/productionLibrary"))
+
     inputs.file(vscodeDir.file("package.json"))
+    inputs.file(vscodeDir.file("package-lock.json")).optional()
 
     outputs.dir(vscodeDir.dir("node_modules"))
-
-    npm("install")
 }
 
-val vscodeBuild = tasks.register<Exec>("vscodeBuild") {
+// Keep your original task name as an alias (optional, but preserves your current UX)
+tasks.register("vscodeNpmInstall") {
+    group = "vscode"
+    description = "Alias for npmInstall (plugin-managed Node)."
+    dependsOn(npmInstall)
+}
+
+val vscodeBuild = tasks.register<NpmTask>("vscodeBuild") {
     group = "vscode"
     description = "Builds the VS Code extension bundle (npm run build)."
 
-    dependsOn(vscodeNpmInstall)
+    dependsOn(npmInstall)
 
     inputs.file(vscodeDir.file("esbuild.config.mjs"))
     inputs.file(vscodeDir.file("tsconfig.json"))
@@ -80,10 +96,10 @@ val vscodeBuild = tasks.register<Exec>("vscodeBuild") {
     // output is dist/extension.js per esbuild config :contentReference[oaicite:6]{index=6}
     outputs.dir(vscodeDir.dir("dist"))
 
-    npm("run", "build") // package.json: "build": "node esbuild.config.mjs" :contentReference[oaicite:7]{index=7}
+    npmCommand.set(listOf("run", "build")) // package.json: "build": "node esbuild.config.mjs" :contentReference[oaicite:7]{index=7}
 }
 
-val vscodePackage = tasks.register<Exec>("vscodePackage") {
+val vscodePackage = tasks.register<NpmTask>("vscodePackage") {
     group = "vscode"
     description = "Packages the VS Code extension (.vsix) (npm run package)."
 
@@ -92,21 +108,23 @@ val vscodePackage = tasks.register<Exec>("vscodePackage") {
     // vsce writes a *.vsix into the vscode/ folder by default
     outputs.files(fileTree(vscodeDir) { include("*.vsix") })
 
-    npm("run", "package") // package.json: "package": "vsce package" :contentReference[oaicite:8]{index=8}
+    npmCommand.set(listOf("run", "package")) // package.json: "package": "vsce package" :contentReference[oaicite:8]{index=8}
+}
+
+val stageVscodeVsix = tasks.register<Copy>("stageVscodeVsix") {
+    group = "distribution"
+    description = "Stages the VS Code extension .vsix into build/distributions."
+
+    dependsOn(vscodePackage)
+    from(fileTree(vscodeDir) { include("*.vsix") })
+    into(layout.projectDirectory.dir("build/distributions"))
 }
 
 tasks.register("buildVscodeExtension") {
     group = "distribution"
     description = "Builds and stages the VS Code extension .vsix into build/distributions."
 
-    dependsOn(vscodePackage)
-
-    doLast {
-        copy {
-            from(fileTree(vscodeDir) { include("*.vsix") })
-            into(layout.projectDirectory.dir("build/distributions"))
-        }
-    }
+    dependsOn(stageVscodeVsix)
 }
 
 // Optional: wire into the root lifecycle
@@ -115,12 +133,10 @@ tasks.named("assemble") {
 }
 
 // Optional: clean VS Code artifacts on ./gradlew clean
-tasks.named("clean") {
-    doLast {
-        delete(
-            vscodeDir.dir("dist"),
-            vscodeDir.dir("node_modules"),
-            fileTree(vscodeDir) { include("*.vsix") }
-        )
-    }
+tasks.named<Delete>("clean") {
+    delete(
+        vscodeDir.dir("dist"),
+        vscodeDir.dir("node_modules"),
+        fileTree(vscodeDir) { include("*.vsix") }
+    )
 }
