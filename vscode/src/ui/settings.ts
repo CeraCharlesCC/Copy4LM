@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
-import { JsCopyOptions, JsDirectoryStructureOptions } from 'copy4lm-common';
+import * as c4 from "copy4lm-common";
+
+type JsCopyOptions = c4.io.github.ceracharlescc.copy4lm.JsCopyOptions;
+type JsDirectoryStructureOptions = c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureOptions;
 
 const DEFAULTS = {
   headerFormat: '```$FILE_PATH',
@@ -46,12 +49,24 @@ export function getCopyOptions(projectName: string): JsCopyOptions {
     filenameFilters,
     useFilenameFilters: config.get('common.useFilenameFilters', DEFAULTS.useFilenameFilters),
     addExtraLineBetweenFiles: config.get(
-      'fileContent.addExtraLineBetweenFiles',
-      DEFAULTS.addExtraLineBetweenFiles
+        'fileContent.addExtraLineBetweenFiles',
+        DEFAULTS.addExtraLineBetweenFiles
     ),
     strictMemoryRead: config.get('common.strictMemoryRead', DEFAULTS.strictMemoryRead),
     maxFileSizeKB,
-    projectName
+    projectName,
+    equals: function (other: c4.Nullable<any>): boolean {
+      throw new Error("Function not implemented.");
+    },
+    hashCode: function (): number {
+      throw new Error("Function not implemented.");
+    },
+    copy: function (headerFormat?: string, footerFormat?: string, preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, addExtraLineBetweenFiles?: boolean, strictMemoryRead?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsCopyOptions {
+      throw new Error("Function not implemented.");
+    },
+    toString: function (): string {
+      throw new Error("Function not implemented.");
+    }
   };
 }
 
@@ -72,6 +87,18 @@ export function getDirectoryStructureOptions(projectName: string): JsDirectorySt
     filenameFilters,
     useFilenameFilters: config.get('common.useFilenameFilters', DEFAULTS.useFilenameFilters),
     maxFileSizeKB,
-    projectName
+    projectName,
+    copy: function (preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureOptions {
+      throw new Error("Function not implemented.");
+    },
+    toString: function (): string {
+      throw new Error("Function not implemented.");
+    },
+    hashCode: function (): number {
+      throw new Error("Function not implemented.");
+    },
+    equals: function (other: c4.Nullable<any>): boolean {
+      throw new Error("Function not implemented.");
+    }
   };
 }

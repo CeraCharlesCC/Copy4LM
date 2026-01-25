@@ -1,5 +1,8 @@
 import * as vscode from 'vscode';
-import { JsCopyResult, JsDirectoryStructureResult } from 'copy4lm-common';
+import * as c4 from "copy4lm-common";
+
+type JsCopyResult = c4.io.github.ceracharlescc.copy4lm.JsCopyResult;
+type JsDirectoryStructureResult = c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureResult;
 
 export function showCopyResult(result: JsCopyResult): void {
   const fileCountLabel = result.copiedFileCount === 1 ? '1 file' : `${result.copiedFileCount} files`;

@@ -1,7 +1,11 @@
 import * as vscode from 'vscode';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { JsFileGateway, JsFileRef, JsLogger } from 'copy4lm-common';
+import * as c4 from "copy4lm-common";
+
+type JsLogger = c4.io.github.ceracharlescc.copy4lm.JsLogger;
+type JsFileRef = c4.io.github.ceracharlescc.copy4lm.JsFileRef;
+type JsFileGateway = c4.io.github.ceracharlescc.copy4lm.JsFileGateway;
 
 const BINARY_PROBE_BYTES = 8000;
 

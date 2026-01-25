@@ -1,12 +1,13 @@
 import * as vscode from 'vscode';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import {
-  copyDirectoryStructure,
-  copyFiles,
-  JsFileRef,
-  JsLogger
-} from 'copy4lm-common';
+import * as c4 from "copy4lm-common";
+
+const api = c4.io.github.ceracharlescc.copy4lm;
+
+const { copyFiles, copyDirectoryStructure } = api;
+type JsLogger = c4.io.github.ceracharlescc.copy4lm.JsLogger;
+type JsFileRef = c4.io.github.ceracharlescc.copy4lm.JsFileRef;
 
 import { VsCodeFileGateway } from './gateway/vscodeFileGateway';
 import { getCopyOptions, getDirectoryStructureOptions } from './ui/settings';
@@ -224,4 +225,4 @@ export function activate(context: vscode.ExtensionContext): void {
   );
 }
 
-export function deactivate(): void {}
+export function deactivate(): void { }
