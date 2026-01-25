@@ -12,6 +12,9 @@
 !common/
 !common/**
 
+common/build/
+common/build/**
+
 !gradle/
 !gradle/**
 
