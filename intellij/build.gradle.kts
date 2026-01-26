@@ -1,6 +1,7 @@
 import org.jetbrains.changelog.Changelog
 import org.jetbrains.changelog.markdownToHTML
 import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 
 fun properties(key: String) = providers.gradleProperty(key)
 fun environment(key: String) = providers.environmentVariable(key)
@@ -158,4 +159,10 @@ val runIdeForUiTests by intellijPlatformTesting.runIde.registering {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+}
+
+tasks.withType<AbstractArchiveTask>().configureEach {
+    if (name == "buildPlugin") {
+        archiveBaseName.set("copy4lm-intellij")
+    }
 }
