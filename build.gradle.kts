@@ -30,6 +30,8 @@ tasks.register("buildPlugin") {
             include("*.zip")
         }
     }
+
+    dependsOn("buildVscodeExtension")
 }
 
 tasks.register("verifyPlugin") {
