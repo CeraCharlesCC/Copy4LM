@@ -3,3 +3,7 @@ src/**
 .vscodeignore
 esbuild.config.mjs
 tsconfig.json
+.gradle/**
+node_modules/**
+*.vsix
+build.gradle.kts
