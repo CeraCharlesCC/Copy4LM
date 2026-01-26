@@ -1,3 +1,18 @@
+## [0.2.3] - 2026-01-26
+
+### Added
+- Add initial VS Code extension support for copying file content and directory structures
+
+### Changed
+- Refactor project to Kotlin Multiplatform to enable shared code across platforms
+- Move IntelliJ plugin source code into a dedicated `intellij` submodule
+
+### Internal
+- Unify build process to use a single Gradle task for packaging both plugins
+- Update CI workflows to build and package the VS Code extension
+- Refactor imports to use the `copy4lm-common` namespace
+- Clean up old media resources and update project documentation
+
 ## [0.2.2] - 2026-01-14
 ### Changed
 - Update plugin icons with 'LLM' branding and visual elements.

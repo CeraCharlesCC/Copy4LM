@@ -32,14 +32,22 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.2.2 Changes:</h3>
+        <h3>Version 0.2.3 Changes:</h3>
+        <h4>Added</h4>
+        <ul>
+        <li>Add initial VS Code extension support for copying file content and directory structures</li>
+        </ul>
         <h4>Changed</h4>
         <ul>
-        <li>Update plugin icons with &#x27;LLM&#x27; branding and visual elements.</li>
+        <li>Refactor project to Kotlin Multiplatform to enable shared code across platforms</li>
+        <li>Move IntelliJ plugin source code into a dedicated `intellij` submodule</li>
         </ul>
-        <h4>Documentation</h4>
+        <h4>Internal</h4>
         <ul>
-        <li>Update README with plugin name, description, and credits.</li>
+        <li>Unify build process to use a single Gradle task for packaging both plugins</li>
+        <li>Update CI workflows to build and package the VS Code extension</li>
+        <li>Refactor imports to use the `copy4lm-common` namespace</li>
+        <li>Clean up old media resources and update project documentation</li>
         </ul>
         ]]>
     </change-notes>
