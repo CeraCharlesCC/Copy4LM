@@ -111,7 +111,7 @@ jobs:
           set -euo pipefail
           python -m pip install --upgrade pip
           pip install "openai>=1.0.0,<2"
-          
+
       - name: Bump plugin version files to match tag
         shell: bash
         run: |
@@ -121,6 +121,7 @@ jobs:
 
           PLUGIN_XML="intellij/src/main/resources/META-INF/plugin.xml"
           GRADLE_PROPERTIES="gradle.properties"
+          VSCODE_PACKAGE_JSON="vscode/package.json"
 
           # Update plugin.xml <version>
           sed -i "s/<version>.*<\/version>/<version>${VER}<\/version>/" "$PLUGIN_XML"
@@ -128,12 +129,22 @@ jobs:
           # Update gradle.properties pluginVersion=...
           sed -i "s/^pluginVersion[[:space:]]*=.*/pluginVersion=${VER}/" "$GRADLE_PROPERTIES"
 
+          # Update vscode/package.json version
+          sed -i "s/\"version\": \"[^\"]*\"/\"version\": \"${VER}\"/" "$VSCODE_PACKAGE_JSON"
+
           # Sanity check they match
           xml_ver="$(sed -n 's/.*<version>\(.*\)<\/version>.*/\1/p' "$PLUGIN_XML")"
           gp_ver="$(awk -F= '/^pluginVersion[[:space:]]*=/ {gsub(/[[:space:]]*/,"",$2); print $2; exit}' "$GRADLE_PROPERTIES")"
-          test "$xml_ver" = "$gp_ver"
+          vscode_ver="$(grep -o '"version": "[^"]*"' "$VSCODE_PACKAGE_JSON" | head -1 | sed 's/"version": "\(.*\)"/\1/')"
 
-          git add "$PLUGIN_XML" "$GRADLE_PROPERTIES"
+          echo "plugin.xml version: $xml_ver"
+          echo "gradle.properties version: $gp_ver"
+          echo "vscode/package.json version: $vscode_ver"
+
+          test "$xml_ver" = "$gp_ver"
+          test "$xml_ver" = "$vscode_ver"
+
+          git add "$PLUGIN_XML" "$GRADLE_PROPERTIES" "$VSCODE_PACKAGE_JSON"
           git commit -m "chore: bump version to ${VER}" || echo "No version changes to commit"
           git push origin "HEAD:${{ steps.branch.outputs.branch }}"
 
@@ -200,25 +211,11 @@ jobs:
           git checkout --detach "${TAG}"
           git status --porcelain
 
-      - name: Build plugin distribution zip
+      - name: Build all plugins
         shell: bash
         run: |
           set -euo pipefail
           ./gradlew --no-daemon buildPlugin
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
-      - name: Build VS Code extension
-        shell: bash
-        run: |
-          set -euo pipefail
-          ./gradlew --no-daemon :common:jsProductionLibraryDistribution
-          npm --prefix vscode install
-          npm --prefix vscode run build
-          npm --prefix vscode run package
 
       - name: Locate zip artifact
         id: zip
@@ -239,10 +236,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          VSIX="$(ls -1 vscode/*.vsix 2>/dev/null | head -n 1 || true)"
+          VSIX="$(ls -1 build/distributions/*.vsix 2>/dev/null | head -n 1 || true)"
           if [ -z "$VSIX" ]; then
-            echo "No vsix found in vscode/" >&2
-            ls -la vscode >&2 || true
+            echo "No vsix found in build/distributions/" >&2
+            ls -la build/distributions >&2 || true
             exit 1
           fi
           echo "vsix_path=$VSIX" >> "$GITHUB_OUTPUT"

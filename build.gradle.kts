@@ -52,6 +52,12 @@ tasks.register("signPlugin") {
 
 val vscodeDir = layout.projectDirectory.dir("vscode")
 
+// Copy CHANGELOG.md from root to vscode for packaging
+val copyChangelogToVscode = tasks.register<Copy>("copyChangelogToVscode") {
+    from(layout.projectDirectory.file("CHANGELOG.md"))
+    into(vscodeDir)
+}
+
 // Configure the Node plugin to run in vscode/ and to download a pinned Node version.
 node {
     nodeProjectDir.set(vscodeDir.asFile)
@@ -91,6 +97,7 @@ val vscodeBuild = tasks.register<NpmTask>("vscodeBuild") {
     description = "Builds the VS Code extension bundle (npm run build)."
 
     dependsOn(npmInstall)
+    dependsOn(copyChangelogToVscode)
 
     inputs.file(vscodeDir.file("esbuild.config.mjs"))
     inputs.file(vscodeDir.file("tsconfig.json"))
