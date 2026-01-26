@@ -9,7 +9,7 @@ const options = {
   format: 'cjs',
   sourcemap: true,
   outfile: 'dist/extension.js',
-  external: ['vscode', 'copy4lm-common'],
+  external: ['vscode'],
   tsconfig: 'tsconfig.json',
   logLevel: 'info'
 };
