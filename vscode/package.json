@@ -6,7 +6,7 @@
   "publisher": "ceracharlescc",
   "license": "MIT",
   "vsce": {
-    "dependencies": false
+    "dependencies": true
   },
   "repository": {
     "type": "git",
