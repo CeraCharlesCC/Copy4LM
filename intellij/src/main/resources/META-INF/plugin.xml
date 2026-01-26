@@ -32,21 +32,14 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.2.3 Changes:</h3>
-        <h4>Added</h4>
-        <ul>
-        <li>Add initial VS Code extension support with commands, settings, and TypeScript source (#2bbe301)</li>
-        </ul>
+        <h3>Version 0.2.2 Changes:</h3>
         <h4>Changed</h4>
         <ul>
-        <li>Refactor codebase to Kotlin Multiplatform (KMP) to support shared logic across JVM and JS targets (#fca2ce2)</li>
-        <li>Move IntelliJ plugin implementation into a dedicated `intellij` submodule (#ffb1985)</li>
+        <li>Update plugin icons with &#x27;LLM&#x27; branding and visual elements.</li>
         </ul>
-        <h4>Internal</h4>
+        <h4>Documentation</h4>
         <ul>
-        <li>Unify build process to use a single Gradle task for packaging both IntelliJ and VS Code plugins (#17b3635)</li>
-        <li>Synchronize version numbers across `plugin.xml`, `gradle.properties`, and `package.json`</li>
-        <li>Update CI workflows to build and package the VS Code extension</li>
+        <li>Update README with plugin name, description, and credits.</li>
         </ul>
         ]]>
     </change-notes>
