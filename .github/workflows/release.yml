@@ -97,7 +97,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          bash ./gradlew --no-daemon clean test
+          bash ./gradlew --no-daemon clean buildPlugin test
 
       - name: Set up Python
         uses: actions/setup-python@v5
