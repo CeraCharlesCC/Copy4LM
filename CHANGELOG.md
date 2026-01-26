@@ -1,3 +1,17 @@
+## [0.2.3] - 2026-01-26
+
+### Added
+- Add initial VS Code extension support with commands, settings, and TypeScript source (#2bbe301)
+
+### Changed
+- Refactor codebase to Kotlin Multiplatform (KMP) to support shared logic across JVM and JS targets (#fca2ce2)
+- Move IntelliJ plugin implementation into a dedicated `intellij` submodule (#ffb1985)
+
+### Internal
+- Unify build process to use a single Gradle task for packaging both IntelliJ and VS Code plugins (#17b3635)
+- Synchronize version numbers across `plugin.xml`, `gradle.properties`, and `package.json`
+- Update CI workflows to build and package the VS Code extension
+
 ## [0.2.2] - 2026-01-14
 ### Changed
 - Update plugin icons with 'LLM' branding and visual elements.
