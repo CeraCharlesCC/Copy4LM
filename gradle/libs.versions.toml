@@ -8,6 +8,7 @@ changelog = "2.4.0"
 intellijPlatform = "2.7.1"
 qodana = "2025.1.1"
 kover = "0.9.1"
+nodeGradle = "7.1.0"
 
 # Testing libraries
 junit-platform = "1.14.1"
@@ -27,3 +28,4 @@ kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 qodana = { id = "org.jetbrains.qodana", version.ref = "qodana" }
+nodeGradle = { id = "com.github.node-gradle.node", version.ref = "nodeGradle" }
