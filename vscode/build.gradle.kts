@@ -86,14 +86,6 @@ val vscodePackage = tasks.register<NpmTask>("vscodePackage") {
     npmCommand.set(listOf("run", "package")) // package.json: "package": "vsce package"
 }
 
-// Main entry point for building the VS Code extension
-tasks.register("buildVscodeExtension") {
-    group = "distribution"
-    description = "Builds the VS Code extension .vsix."
-
-    dependsOn(vscodePackage)
-}
-
 // Clean VS Code artifacts on ./gradlew clean
 tasks.named<Delete>("clean") {
     delete(
