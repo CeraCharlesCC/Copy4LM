@@ -5,6 +5,9 @@
   "version": "0.2.2",
   "publisher": "ceracharlescc",
   "license": "MIT",
+  "vsce": {
+    "dependencies": false
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/CeraCharlesCC/Copy4LM"
@@ -165,7 +168,7 @@
     "@types/vscode": "^1.86.0",
     "@vscode/vsce": "^2.25.0",
     "esbuild": "^0.24.0",
-    "typescript": "^5.5.4"
+    "typescript": "5.5.4"
   },
   "dependencies": {
     "copy4lm-common": "file:../common/build/dist/js/productionLibrary"
