@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { spawnSync } from 'node:child_process';
 import * as c4 from "copy4lm-common";
 
 type JsLogger = c4.io.github.ceracharlescc.copy4lm.JsLogger;
@@ -30,6 +31,8 @@ function getTabUri(tab: vscode.Tab): vscode.Uri | undefined {
 
 export class VsCodeFileGateway implements JsFileGateway {
   private readonly logger: JsLogger | undefined;
+  private readonly gitIgnoreCache = new Map<string, boolean>();
+  private readonly gitIgnoreErrorLoggedRoots = new Set<string>();
 
   constructor(logger?: JsLogger) {
     this.logger = logger;
@@ -110,6 +113,18 @@ export class VsCodeFileGateway implements JsFileGateway {
     return toPosixPath(relative || file.name);
   }
 
+  isGitIgnored(file: JsFileRef): boolean {
+    const cacheKey = normalizeForCompare(file.path);
+    const cached = this.gitIgnoreCache.get(cacheKey);
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const ignored = this.resolveGitIgnore(file);
+    this.gitIgnoreCache.set(cacheKey, ignored);
+    return ignored;
+  }
+
   private isFileOpen(filePath: string): boolean {
     const normalized = normalizeForCompare(filePath);
     for (const group of vscode.window.tabGroups.all) {
@@ -121,5 +136,54 @@ export class VsCodeFileGateway implements JsFileGateway {
       }
     }
     return false;
+  }
+
+  private resolveGitIgnore(file: JsFileRef): boolean {
+    const fileUri = vscode.Uri.file(file.path);
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri)
+      ?? vscode.workspace.workspaceFolders?.[0];
+
+    if (!workspaceFolder) {
+      return false;
+    }
+
+    const workspaceRoot = workspaceFolder.uri.fsPath;
+    const relativePath = path.relative(workspaceRoot, file.path);
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
+      return false;
+    }
+
+    const pathForGit = toPosixPath(relativePath || '.');
+    const result = spawnSync(
+      'git',
+      ['check-ignore', '--quiet', '--no-index', '--', pathForGit],
+      { cwd: workspaceRoot, windowsHide: true }
+    );
+
+    if (result.status === 0) {
+      return true;
+    }
+
+    if (result.status === 1) {
+      return false;
+    }
+
+    const detail = result.error?.message
+      ?? result.stderr?.toString().trim()
+      ?? `Exit code: ${String(result.status)}`;
+    this.logGitIgnoreErrorOnce(workspaceRoot, detail);
+    return false;
+  }
+
+  private logGitIgnoreErrorOnce(workspaceRoot: string, detail: string): void {
+    const key = normalizeForCompare(workspaceRoot);
+    if (this.gitIgnoreErrorLoggedRoots.has(key)) {
+      return;
+    }
+    this.gitIgnoreErrorLoggedRoots.add(key);
+    this.logger?.error(
+      `Failed to evaluate .gitignore under ${workspaceRoot}; falling back to include files.`,
+      detail
+    );
   }
 }

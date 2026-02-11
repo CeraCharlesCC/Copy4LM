@@ -5,6 +5,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vcs.changes.ChangeListManager
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
@@ -65,6 +66,16 @@ internal class IntelliJFileGateway(
     override fun relativePath(file: FileRef): String {
         val vf = (file as VirtualFileRef).virtualFile
         return repositoryRoot?.let { VfsUtil.getRelativePath(vf, it, '/') } ?: vf.path
+    }
+
+    override fun isGitIgnored(file: FileRef): Boolean {
+        val vf = (file as VirtualFileRef).virtualFile
+        return runCatching {
+            ChangeListManager.getInstance(project).isIgnoredFile(vf)
+        }.getOrElse { throwable ->
+            logger.warn("Failed to resolve .gitignore status for ${vf.path}: ${throwable.message}", throwable)
+            false
+        }
     }
 
     companion object {

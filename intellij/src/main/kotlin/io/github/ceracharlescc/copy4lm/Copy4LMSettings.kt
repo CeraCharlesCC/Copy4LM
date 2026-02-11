@@ -25,6 +25,7 @@ internal class Copy4LMSettings : PersistentStateComponent<Copy4LMSettings.State>
         var maxFileSizeKB: Int = 500,
         var useFilenameFilters: Boolean = false,
         var filenameFilters: List<String> = listOf(),
+        var respectGitIgnore: Boolean = true,
         var strictMemoryRead: Boolean = true,
         var showCopyNotification: Boolean = true
     )

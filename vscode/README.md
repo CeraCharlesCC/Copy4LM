@@ -22,6 +22,7 @@ Copy file contents or directory structure into the clipboard with LLM-friendly f
 - `copy4lm.common.maxFileSizeKB`
 - `copy4lm.common.useFilenameFilters`
 - `copy4lm.common.filenameFilters`
+- `copy4lm.common.respectGitIgnore`
 - `copy4lm.common.strictMemoryRead`
 - `copy4lm.fileContent.headerFormat`
 - `copy4lm.fileContent.footerFormat`

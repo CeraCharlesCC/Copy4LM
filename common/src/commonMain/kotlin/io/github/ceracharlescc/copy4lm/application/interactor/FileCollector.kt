@@ -37,6 +37,12 @@ class FileCollector(
     private fun collectFromFile(file: FileRef, plannedFiles: MutableList<PlannedFile>) {
         if (shouldStop(plannedFiles.size)) return
 
+        if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
+            val kind = if (file.isDirectory) "directory" else "file"
+            logger.info("Skipping $kind: ${file.name} - Ignored by .gitignore")
+            return
+        }
+
         if (file.isDirectory) {
             for (child in fileGateway.childrenOf(file)) {
                 collectFromFile(child, plannedFiles)

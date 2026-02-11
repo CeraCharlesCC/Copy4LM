@@ -19,6 +19,7 @@ internal object IntelliJSettingsMapper {
             setMaxFileCount = common.setMaxFileCount,
             filenameFilters = common.filenameFilters,
             useFilenameFilters = common.useFilenameFilters,
+            respectGitIgnore = common.respectGitIgnore,
             addExtraLineBetweenFiles = fileContent.addExtraLineBetweenFiles,
             strictMemoryRead = common.strictMemoryRead,
             maxFileSizeKB = common.maxFileSizeKB,
@@ -33,7 +34,8 @@ internal object IntelliJSettingsMapper {
             setMaxFileCount = common.setMaxFileCount,
             filenameFilters = common.filenameFilters,
             useFilenameFilters = common.useFilenameFilters,
-            maxFileSizeKB = common.maxFileSizeKB
+            maxFileSizeKB = common.maxFileSizeKB,
+            respectGitIgnore = common.respectGitIgnore
         )
     }
 

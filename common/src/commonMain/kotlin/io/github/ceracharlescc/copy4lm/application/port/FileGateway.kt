@@ -39,4 +39,9 @@ interface FileGateway {
      * Returns the relative path of the file from the repository root.
      */
     fun relativePath(file: FileRef): String
+
+    /**
+     * Checks if the file or directory is ignored by VCS ignore rules (for example, .gitignore).
+     */
+    fun isGitIgnored(file: FileRef): Boolean
 }

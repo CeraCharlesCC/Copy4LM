@@ -33,6 +33,7 @@ internal class Copy4LMConfigurable(private val project: Project) : Configurable 
     private val maxFilesField = JBTextField(10)
     private val maxFileSizeField = JBTextField(10)
     private val useFilenameFiltersCheckBox = JBCheckBox("Enable file extension filtering")
+    private val respectGitIgnoreCheckBox = JBCheckBox("Respect .gitignore (skip ignored files and directories)")
     private val tableModel = DefaultTableModel(arrayOf("File Extensions"), 0)
     private val table = JBTable(tableModel)
     private val addButton = JButton("Add")
@@ -66,6 +67,7 @@ internal class Copy4LMConfigurable(private val project: Project) : Configurable 
                 panel.add(SettingsUi.createInlinePanel(SettingsUi.createWrappedCheckBoxPanel(setMaxFilesCheckBox), maxFilesField))
                 panel.add(SettingsUi.createInlinePanel(JLabel(), warningLabel))
                 panel.add(SettingsUi.createLabeledPanel("Maximum file size (KB):", maxFileSizeField))
+                panel.add(respectGitIgnoreCheckBox)
                 panel.add(
                     SettingsUi.createInlinePanel(
                         SettingsUi.createWrappedCheckBoxPanel(useFilenameFiltersCheckBox),
@@ -95,6 +97,7 @@ internal class Copy4LMConfigurable(private val project: Project) : Configurable 
                 setMaxFilesCheckBox.isSelected != state.setMaxFileCount ||
                 (setMaxFilesCheckBox.isSelected && maxFilesField.text.toIntOrNull() != state.fileCountLimit) ||
                 maxFileSizeField.text.toIntOrNull() != state.maxFileSizeKB ||
+                respectGitIgnoreCheckBox.isSelected != state.respectGitIgnore ||
                 useFilenameFiltersCheckBox.isSelected != state.useFilenameFilters ||
                 strictMemoryReadCheckBox.isSelected != state.strictMemoryRead ||
                 showNotificationCheckBox.isSelected != state.showCopyNotification
@@ -106,6 +109,7 @@ internal class Copy4LMConfigurable(private val project: Project) : Configurable 
         state.setMaxFileCount = setMaxFilesCheckBox.isSelected
         state.fileCountLimit = maxFilesField.text.toIntOrNull() ?: state.fileCountLimit
         state.maxFileSizeKB = maxFileSizeField.text.toIntOrNull() ?: state.maxFileSizeKB
+        state.respectGitIgnore = respectGitIgnoreCheckBox.isSelected
         state.useFilenameFilters = useFilenameFiltersCheckBox.isSelected
         state.strictMemoryRead = strictMemoryReadCheckBox.isSelected
         state.showCopyNotification = showNotificationCheckBox.isSelected
@@ -117,6 +121,7 @@ internal class Copy4LMConfigurable(private val project: Project) : Configurable 
         setMaxFilesCheckBox.isSelected = state.setMaxFileCount
         maxFilesField.text = state.fileCountLimit.toString()
         maxFileSizeField.text = state.maxFileSizeKB.toString()
+        respectGitIgnoreCheckBox.isSelected = state.respectGitIgnore
         useFilenameFiltersCheckBox.isSelected = state.useFilenameFilters
         strictMemoryReadCheckBox.isSelected = state.strictMemoryRead
         showNotificationCheckBox.isSelected = state.showCopyNotification

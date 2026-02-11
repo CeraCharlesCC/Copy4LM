@@ -15,6 +15,7 @@
     <li>Customizable text structure, including pre-text, file header text, and post-text.</li>
     <li>Configurable file copying constraints (default is 30 files) to prevent memory issues with larger folders.</li>
     <li>Optional file extension filters to specify which files should be copied.</li>
+    <li>Optional <code>.gitignore</code> support to skip ignored files and directories.</li>
     <li>Information on the copied items, including the number of files copied, total lines, total words, and an estimate of tokens (considering words and punctuation).</li>
 </ul>
 <h2>Credits</h2>

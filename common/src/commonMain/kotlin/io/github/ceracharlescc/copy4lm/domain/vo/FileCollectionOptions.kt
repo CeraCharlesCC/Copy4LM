@@ -8,5 +8,6 @@ data class FileCollectionOptions(
     val setMaxFileCount: Boolean = true,
     val filenameFilters: List<String> = emptyList(),
     val useFilenameFilters: Boolean = false,
-    val maxFileSizeKB: Int = 500
+    val maxFileSizeKB: Int = 500,
+    val respectGitIgnore: Boolean = true
 )

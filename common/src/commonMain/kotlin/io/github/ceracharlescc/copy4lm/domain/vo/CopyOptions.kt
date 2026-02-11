@@ -12,6 +12,7 @@ data class CopyOptions(
     val setMaxFileCount: Boolean = true,
     val filenameFilters: List<String> = emptyList(),
     val useFilenameFilters: Boolean = false,
+    val respectGitIgnore: Boolean = true,
     val addExtraLineBetweenFiles: Boolean = true,
     val strictMemoryRead: Boolean = true,
     val maxFileSizeKB: Int = 500,
