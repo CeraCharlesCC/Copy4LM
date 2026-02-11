@@ -39,7 +39,7 @@ class FileCollector(
 
         if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
             val kind = if (file.isDirectory) "directory" else "file"
-            logger.info("Skipping $kind: ${file.name} - Ignored by .gitignore")
+            logger.info("Skipping $kind: ${file.name} - Ignored by VCS ignore rules")
             return
         }
 

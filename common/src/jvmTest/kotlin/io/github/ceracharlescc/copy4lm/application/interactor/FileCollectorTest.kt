@@ -183,7 +183,7 @@ internal class FileCollectorTest {
         val collected = collector.collect(listOf(ignored))
 
         assertTrue(collected.files.isEmpty())
-        assertTrue(logger.infos.any { it.contains("Ignored by .gitignore") })
+        assertTrue(logger.infos.any { it.contains("Ignored by VCS ignore rules") })
     }
 
     @Test
@@ -244,7 +244,7 @@ internal class FileCollectorTest {
         val collected = collector.collect(listOf(ignoredDir, keep))
 
         assertEquals(listOf("main.kt"), collected.relativePaths)
-        assertTrue(logger.infos.any { it.contains("Skipping directory") && it.contains("Ignored by .gitignore") })
+        assertTrue(logger.infos.any { it.contains("Skipping directory") && it.contains("Ignored by VCS ignore rules") })
     }
 
     @Test

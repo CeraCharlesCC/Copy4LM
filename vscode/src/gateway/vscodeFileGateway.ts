@@ -32,7 +32,9 @@ function getTabUri(tab: vscode.Tab): vscode.Uri | undefined {
 export class VsCodeFileGateway implements JsFileGateway {
   private readonly logger: JsLogger | undefined;
   private readonly gitIgnoreCache = new Map<string, boolean>();
+  private readonly gitIgnoreDisabledRoots = new Set<string>();
   private readonly gitIgnoreErrorLoggedRoots = new Set<string>();
+  private readonly gitIgnoreInfoLoggedRoots = new Set<string>();
 
   constructor(logger?: JsLogger) {
     this.logger = logger;
@@ -148,6 +150,20 @@ export class VsCodeFileGateway implements JsFileGateway {
     }
 
     const workspaceRoot = workspaceFolder.uri.fsPath;
+    const workspaceKey = normalizeForCompare(workspaceRoot);
+
+    if (!vscode.workspace.isTrusted) {
+      this.logGitIgnoreInfoOnce(
+        workspaceRoot,
+        'Workspace is untrusted; skipping VCS ignore evaluation and including files.'
+      );
+      return false;
+    }
+
+    if (this.gitIgnoreDisabledRoots.has(workspaceKey)) {
+      return false;
+    }
+
     const relativePath = path.relative(workspaceRoot, file.path);
     if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
       return false;
@@ -156,7 +172,7 @@ export class VsCodeFileGateway implements JsFileGateway {
     const pathForGit = toPosixPath(relativePath || '.');
     const result = spawnSync(
       'git',
-      ['check-ignore', '--quiet', '--no-index', '--', pathForGit],
+      ['check-ignore', '--quiet', '--', pathForGit],
       { cwd: workspaceRoot, windowsHide: true }
     );
 
@@ -168,11 +184,46 @@ export class VsCodeFileGateway implements JsFileGateway {
       return false;
     }
 
+    const expectedFallbackDetail = this.resolveExpectedGitFallbackDetail(result);
+    if (expectedFallbackDetail) {
+      this.gitIgnoreDisabledRoots.add(workspaceKey);
+      this.logGitIgnoreInfoOnce(
+        workspaceRoot,
+        'VCS ignore evaluation unavailable for this workspace root; including files.',
+        expectedFallbackDetail
+      );
+      return false;
+    }
+
     const detail = result.error?.message
       ?? result.stderr?.toString().trim()
       ?? `Exit code: ${String(result.status)}`;
     this.logGitIgnoreErrorOnce(workspaceRoot, detail);
     return false;
+  }
+
+  private resolveExpectedGitFallbackDetail(result: ReturnType<typeof spawnSync>): string | undefined {
+    const errorCode = this.getErrnoCode(result.error);
+    if (errorCode === 'ENOENT') {
+      return 'Git executable was not found in PATH.';
+    }
+
+    const stderr = result.stderr?.toString().trim() ?? '';
+    const normalizedStderr = stderr.toLowerCase();
+    if (
+      normalizedStderr.includes('not a git repository')
+      || normalizedStderr.includes('not in a git directory')
+      || normalizedStderr.includes('outside repository')
+    ) {
+      return stderr || 'Current workspace root is not part of a Git repository.';
+    }
+
+    return undefined;
+  }
+
+  private getErrnoCode(error: Error | undefined): string | undefined {
+    const errnoError = error as NodeJS.ErrnoException | undefined;
+    return typeof errnoError?.code === 'string' ? errnoError.code : undefined;
   }
 
   private logGitIgnoreErrorOnce(workspaceRoot: string, detail: string): void {
@@ -182,8 +233,18 @@ export class VsCodeFileGateway implements JsFileGateway {
     }
     this.gitIgnoreErrorLoggedRoots.add(key);
     this.logger?.error(
-      `Failed to evaluate .gitignore under ${workspaceRoot}; falling back to include files.`,
+      `Failed to evaluate VCS ignore rules under ${workspaceRoot}; falling back to include files.`,
       detail
     );
+  }
+
+  private logGitIgnoreInfoOnce(workspaceRoot: string, message: string, detail?: string): void {
+    const key = normalizeForCompare(workspaceRoot);
+    if (this.gitIgnoreInfoLoggedRoots.has(key)) {
+      return;
+    }
+    this.gitIgnoreInfoLoggedRoots.add(key);
+    const suffix = detail ? ` (${detail})` : '';
+    this.logger?.info(`${message} [root=${workspaceRoot}]${suffix}`);
   }
 }
