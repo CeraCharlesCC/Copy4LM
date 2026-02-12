@@ -2,7 +2,7 @@
   "name": "copy4lm-vscode",
   "displayName": "Copy 4 LM",
   "description": "Copy file contents and directory structure for LLM prompts.",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "publisher": "ceracharlescc",
   "license": "MIT",
   "vsce": {
