@@ -14,6 +14,7 @@ internal class FakeFileGateway(
     private val children: Map<String, List<FakeFileRef>> = emptyMap(),
     private val contents: Map<String, String> = emptyMap(),
     private val binaryPaths: Set<String> = emptySet(),
+    private val ignoredPaths: Set<String> = emptySet(),
     private val sizesBytes: Map<String, Long> = emptyMap(),
     private val repoRoot: String = "/repo"
 ) : FileGateway {
@@ -40,6 +41,9 @@ internal class FakeFileGateway(
         val prefix = repoRoot.trimEnd('/') + "/"
         return if (file.path.startsWith(prefix)) file.path.removePrefix(prefix) else file.path
     }
+
+    override fun isGitIgnored(file: FileRef): Boolean =
+        file.path in ignoredPaths
 }
 
 class CapturingLogger : LoggerPort {

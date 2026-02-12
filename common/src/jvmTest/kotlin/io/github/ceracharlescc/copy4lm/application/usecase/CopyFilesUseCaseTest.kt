@@ -221,4 +221,28 @@ internal class CopyFilesUseCaseTest {
 
         assertEquals(listOf("/repo/A.kt" to false), gateway.readCalls)
     }
+
+    @Test
+    fun `propagates respectGitIgnore option to collector`() {
+        val ignored = FakeFileRef("generated.kt", "/repo/generated.kt")
+
+        val gateway = FakeFileGateway(
+            contents = mapOf(ignored.path to "generated"),
+            ignoredPaths = setOf(ignored.path)
+        )
+        val logger = CapturingLogger()
+        val useCase = CopyFilesUseCase(gateway, logger)
+
+        val skippedWhenEnabled = useCase.execute(
+            files = listOf(ignored),
+            options = CopyOptions(respectGitIgnore = true)
+        )
+        assertEquals(0, skippedWhenEnabled.copiedFileCount)
+
+        val includedWhenDisabled = useCase.execute(
+            files = listOf(ignored),
+            options = CopyOptions(respectGitIgnore = false)
+        )
+        assertEquals(1, includedWhenDisabled.copiedFileCount)
+    }
 }

@@ -13,6 +13,7 @@ const DEFAULTS = {
   setMaxFileCount: true,
   filenameFilters: [] as string[],
   useFilenameFilters: false,
+  respectGitIgnore: true,
   addExtraLineBetweenFiles: true,
   strictMemoryRead: true,
   maxFileSizeKB: 500,
@@ -48,6 +49,7 @@ export function getCopyOptions(projectName: string): JsCopyOptions {
     setMaxFileCount: config.get('common.setMaxFileCount', DEFAULTS.setMaxFileCount),
     filenameFilters,
     useFilenameFilters: config.get('common.useFilenameFilters', DEFAULTS.useFilenameFilters),
+    respectGitIgnore: config.get('common.respectGitIgnore', DEFAULTS.respectGitIgnore),
     addExtraLineBetweenFiles: config.get(
         'fileContent.addExtraLineBetweenFiles',
         DEFAULTS.addExtraLineBetweenFiles
@@ -61,7 +63,7 @@ export function getCopyOptions(projectName: string): JsCopyOptions {
     hashCode: function (): number {
       throw new Error("Function not implemented.");
     },
-    copy: function (headerFormat?: string, footerFormat?: string, preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, addExtraLineBetweenFiles?: boolean, strictMemoryRead?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsCopyOptions {
+    copy: function (headerFormat?: string, footerFormat?: string, preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, respectGitIgnore?: boolean, addExtraLineBetweenFiles?: boolean, strictMemoryRead?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsCopyOptions {
       throw new Error("Function not implemented.");
     },
     toString: function (): string {
@@ -86,9 +88,10 @@ export function getDirectoryStructureOptions(projectName: string): JsDirectorySt
     setMaxFileCount: config.get('common.setMaxFileCount', DEFAULTS.setMaxFileCount),
     filenameFilters,
     useFilenameFilters: config.get('common.useFilenameFilters', DEFAULTS.useFilenameFilters),
+    respectGitIgnore: config.get('common.respectGitIgnore', DEFAULTS.respectGitIgnore),
     maxFileSizeKB,
     projectName,
-    copy: function (preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureOptions {
+    copy: function (preText?: string, postText?: string, fileCountLimit?: number, setMaxFileCount?: boolean, filenameFilters?: Array<string>, useFilenameFilters?: boolean, respectGitIgnore?: boolean, maxFileSizeKB?: number, projectName?: string): c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureOptions {
       throw new Error("Function not implemented.");
     },
     toString: function (): string {

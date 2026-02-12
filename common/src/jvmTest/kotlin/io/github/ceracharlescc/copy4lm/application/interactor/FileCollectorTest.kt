@@ -160,6 +160,94 @@ internal class FileCollectorTest {
     }
 
     @Test
+    fun `skips gitignored file when respectGitIgnore is enabled`() {
+        val ignored = FakeFileRef("secret.txt", "/repo/secret.txt")
+
+        val gateway = FakeFileGateway(
+            contents = mapOf(ignored.path to "sensitive"),
+            ignoredPaths = setOf(ignored.path)
+        )
+        val logger = CapturingLogger()
+
+        val collector = FileCollector(
+            fileGateway = gateway,
+            logger = logger,
+            options = FileCollectionOptions(
+                setMaxFileCount = false,
+                useFilenameFilters = false,
+                maxFileSizeKB = 500,
+                respectGitIgnore = true
+            )
+        )
+
+        val collected = collector.collect(listOf(ignored))
+
+        assertTrue(collected.files.isEmpty())
+        assertTrue(logger.infos.any { it.contains("Ignored by VCS ignore rules") })
+    }
+
+    @Test
+    fun `includes gitignored file when respectGitIgnore is disabled`() {
+        val ignored = FakeFileRef("secret.txt", "/repo/secret.txt")
+
+        val gateway = FakeFileGateway(
+            contents = mapOf(ignored.path to "sensitive"),
+            ignoredPaths = setOf(ignored.path)
+        )
+        val logger = CapturingLogger()
+
+        val collector = FileCollector(
+            fileGateway = gateway,
+            logger = logger,
+            options = FileCollectionOptions(
+                setMaxFileCount = false,
+                useFilenameFilters = false,
+                maxFileSizeKB = 500,
+                respectGitIgnore = false
+            )
+        )
+
+        val collected = collector.collect(listOf(ignored))
+
+        assertEquals(listOf("secret.txt"), collected.relativePaths)
+    }
+
+    @Test
+    fun `skips gitignored directory subtree when respectGitIgnore is enabled`() {
+        val ignoredDir = FakeFileRef("build", "/repo/build", isDirectory = true)
+        val ignoredFile = FakeFileRef("generated.kt", "/repo/build/generated.kt")
+        val keep = FakeFileRef("main.kt", "/repo/main.kt")
+
+        val gateway = FakeFileGateway(
+            children = mapOf(
+                "/repo/build" to listOf(ignoredFile)
+            ),
+            contents = mapOf(
+                ignoredFile.path to "ignored",
+                keep.path to "keep"
+            ),
+            ignoredPaths = setOf(ignoredDir.path)
+        )
+        val logger = CapturingLogger()
+
+        val collector = FileCollector(
+            fileGateway = gateway,
+            logger = logger,
+            options = FileCollectionOptions(
+                setMaxFileCount = false,
+                useFilenameFilters = false,
+                maxFileSizeKB = 500,
+                respectGitIgnore = true
+            )
+        )
+
+        val collected = collector.collect(listOf(ignoredDir, keep))
+
+        assertEquals(listOf("main.kt"), collected.relativePaths)
+        assertTrue(logger.infos.any { it.contains("Skipping directory") && it.contains("Ignored by VCS ignore rules") })
+    }
+
+    @Test
     fun `enforces file count limit and stops traversal`() {
         val dir = FakeFileRef("src", "/repo/src", isDirectory = true)
         val a = FakeFileRef("A.kt", "/repo/src/A.kt")

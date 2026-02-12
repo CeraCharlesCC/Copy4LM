@@ -6,5 +6,6 @@ fun CopyOptions.toFileCollectionOptions(): FileCollectionOptions =
         setMaxFileCount = setMaxFileCount,
         filenameFilters = filenameFilters,
         useFilenameFilters = useFilenameFilters,
-        maxFileSizeKB = maxFileSizeKB
+        maxFileSizeKB = maxFileSizeKB,
+        respectGitIgnore = respectGitIgnore
     )

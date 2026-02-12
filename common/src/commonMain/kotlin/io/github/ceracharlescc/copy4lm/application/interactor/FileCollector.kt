@@ -38,6 +38,10 @@ class FileCollector(
         if (shouldStop(plannedFiles.size)) return
 
         if (file.isDirectory) {
+            if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
+                logger.info("Skipping directory: ${file.name} - Ignored by VCS ignore rules")
+                return
+            }
             for (child in fileGateway.childrenOf(file)) {
                 collectFromFile(child, plannedFiles)
                 if (fileLimitReached) return
@@ -63,6 +67,11 @@ class FileCollector(
 
         if (isTooLarge(file)) {
             logger.info("Skipping file: ${file.name} - Size limit exceeded")
+            return
+        }
+
+        if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
+            logger.info("Skipping file: ${file.name} - Ignored by VCS ignore rules")
             return
         }
 

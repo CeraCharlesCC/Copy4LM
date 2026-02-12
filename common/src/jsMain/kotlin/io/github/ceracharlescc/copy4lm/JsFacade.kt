@@ -31,6 +31,7 @@ external interface JsFileGateway {
     fun isBinary(file: JsFileRef): Boolean
     fun sizeBytes(file: JsFileRef): Double
     fun relativePath(file: JsFileRef): String
+    fun isGitIgnored(file: JsFileRef): Boolean
 }
 
 @JsExport
@@ -49,6 +50,7 @@ data class JsCopyOptions(
     val setMaxFileCount: Boolean = DEFAULT_COPY_OPTIONS.setMaxFileCount,
     val filenameFilters: Array<String> = DEFAULT_COPY_OPTIONS.filenameFilters.toTypedArray(),
     val useFilenameFilters: Boolean = DEFAULT_COPY_OPTIONS.useFilenameFilters,
+    val respectGitIgnore: Boolean = DEFAULT_COPY_OPTIONS.respectGitIgnore,
     val addExtraLineBetweenFiles: Boolean = DEFAULT_COPY_OPTIONS.addExtraLineBetweenFiles,
     val strictMemoryRead: Boolean = DEFAULT_COPY_OPTIONS.strictMemoryRead,
     val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
@@ -63,6 +65,7 @@ data class JsCopyOptions(
         if (fileCountLimit != other.fileCountLimit) return false
         if (setMaxFileCount != other.setMaxFileCount) return false
         if (useFilenameFilters != other.useFilenameFilters) return false
+        if (respectGitIgnore != other.respectGitIgnore) return false
         if (addExtraLineBetweenFiles != other.addExtraLineBetweenFiles) return false
         if (strictMemoryRead != other.strictMemoryRead) return false
         if (maxFileSizeKB != other.maxFileSizeKB) return false
@@ -80,6 +83,7 @@ data class JsCopyOptions(
         var result = fileCountLimit
         result = 31 * result + setMaxFileCount.hashCode()
         result = 31 * result + useFilenameFilters.hashCode()
+        result = 31 * result + respectGitIgnore.hashCode()
         result = 31 * result + addExtraLineBetweenFiles.hashCode()
         result = 31 * result + strictMemoryRead.hashCode()
         result = 31 * result + maxFileSizeKB
@@ -117,6 +121,7 @@ data class JsDirectoryStructureOptions(
     val setMaxFileCount: Boolean = DEFAULT_COPY_OPTIONS.setMaxFileCount,
     val filenameFilters: Array<String> = DEFAULT_COPY_OPTIONS.filenameFilters.toTypedArray(),
     val useFilenameFilters: Boolean = DEFAULT_COPY_OPTIONS.useFilenameFilters,
+    val respectGitIgnore: Boolean = DEFAULT_COPY_OPTIONS.respectGitIgnore,
     val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
     val projectName: String = DEFAULT_COPY_OPTIONS.projectName
 )
@@ -177,6 +182,7 @@ private fun JsCopyOptions.toCopyOptions(): CopyOptions =
         setMaxFileCount = setMaxFileCount,
         filenameFilters = filenameFilters.toList(),
         useFilenameFilters = useFilenameFilters,
+        respectGitIgnore = respectGitIgnore,
         addExtraLineBetweenFiles = addExtraLineBetweenFiles,
         strictMemoryRead = strictMemoryRead,
         maxFileSizeKB = maxFileSizeKB,
@@ -205,7 +211,8 @@ private fun JsDirectoryStructureOptions.toFileCollectionOptions(): FileCollectio
         setMaxFileCount = setMaxFileCount,
         filenameFilters = filenameFilters.toList(),
         useFilenameFilters = useFilenameFilters,
-        maxFileSizeKB = maxFileSizeKB
+        maxFileSizeKB = maxFileSizeKB,
+        respectGitIgnore = respectGitIgnore
     )
 
 private fun formatDirectoryStructureText(
@@ -266,6 +273,9 @@ private class JsFileGatewayAdapter(private val delegate: JsFileGateway) : FileGa
 
     override fun relativePath(file: FileRef): String =
         delegate.relativePath(file.unwrap())
+
+    override fun isGitIgnored(file: FileRef): Boolean =
+        delegate.isGitIgnored(file.unwrap())
 }
 
 private class JsLoggerAdapter(private val delegate: JsLogger) : LoggerPort {
