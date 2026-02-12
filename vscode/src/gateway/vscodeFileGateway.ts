@@ -9,6 +9,7 @@ type JsFileRef = c4.io.github.ceracharlescc.copy4lm.JsFileRef;
 type JsFileGateway = c4.io.github.ceracharlescc.copy4lm.JsFileGateway;
 
 const BINARY_PROBE_BYTES = 8000;
+const GIT_TIMEOUT_MS = 5000;
 
 function toPosixPath(value: string): string {
   return value.replace(/\\/g, '/');
@@ -173,7 +174,7 @@ export class VsCodeFileGateway implements JsFileGateway {
     const result = spawnSync(
       'git',
       ['check-ignore', '--quiet', '--', pathForGit],
-      { cwd: workspaceRoot, windowsHide: true }
+      { cwd: workspaceRoot, windowsHide: true, timeout: GIT_TIMEOUT_MS }
     );
 
     if (result.status === 0) {
@@ -195,6 +196,7 @@ export class VsCodeFileGateway implements JsFileGateway {
       return false;
     }
 
+    this.gitIgnoreDisabledRoots.add(workspaceKey);
     const detail = result.error?.message
       ?? result.stderr?.toString().trim()
       ?? `Exit code: ${String(result.status)}`;

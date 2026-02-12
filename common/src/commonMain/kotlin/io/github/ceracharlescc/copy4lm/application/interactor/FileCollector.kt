@@ -37,13 +37,11 @@ class FileCollector(
     private fun collectFromFile(file: FileRef, plannedFiles: MutableList<PlannedFile>) {
         if (shouldStop(plannedFiles.size)) return
 
-        if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
-            val kind = if (file.isDirectory) "directory" else "file"
-            logger.info("Skipping $kind: ${file.name} - Ignored by VCS ignore rules")
-            return
-        }
-
         if (file.isDirectory) {
+            if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
+                logger.info("Skipping directory: ${file.name} - Ignored by VCS ignore rules")
+                return
+            }
             for (child in fileGateway.childrenOf(file)) {
                 collectFromFile(child, plannedFiles)
                 if (fileLimitReached) return
@@ -69,6 +67,11 @@ class FileCollector(
 
         if (isTooLarge(file)) {
             logger.info("Skipping file: ${file.name} - Size limit exceeded")
+            return
+        }
+
+        if (options.respectGitIgnore && fileGateway.isGitIgnored(file)) {
+            logger.info("Skipping file: ${file.name} - Ignored by VCS ignore rules")
             return
         }
 
