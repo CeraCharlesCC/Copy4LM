@@ -1,3 +1,15 @@
+## [0.3.0] - 2026-02-12
+
+### Added
+- Add support for respecting VCS ignore rules (e.g., `.gitignore`) during file collection (#4)
+- Add timeout for git commands used in ignore rule detection
+
+### Changed
+- Update logging messages to reference VCS ignore rules
+
+### Internal
+- Refactor build setup to isolate VS Code extension logic in a dedicated Gradle subproject (#3)
+
 ## [0.2.3] - 2026-01-26
 
 ### Added
