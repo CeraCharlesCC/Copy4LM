@@ -81,86 +81,115 @@
         }
       ]
     },
-    "configuration": {
-      "title": "Copy 4 LM",
-      "properties": {
-        "copy4lm.common.fileCountLimit": {
-          "type": "number",
-          "default": 30,
-          "minimum": 1,
-          "description": "Maximum number of files to copy."
-        },
-        "copy4lm.common.setMaxFileCount": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enforce the file count limit."
-        },
-        "copy4lm.common.maxFileSizeKB": {
-          "type": "number",
-          "default": 500,
-          "minimum": 1,
-          "description": "Maximum file size (KB) to copy."
-        },
-        "copy4lm.common.useFilenameFilters": {
-          "type": "boolean",
-          "default": false,
-          "description": "Only include files that match the filename filters."
-        },
-        "copy4lm.common.respectGitIgnore": {
-          "type": "boolean",
-          "default": true,
-          "description": "Respect .gitignore when collecting files and directories."
-        },
-        "copy4lm.common.filenameFilters": {
-          "type": "array",
-          "default": [],
-          "items": {
-            "type": "string"
+    "configuration": [
+      {
+        "id": "copy4lm.common",
+        "title": "Copy 4 LM: Common",
+        "properties": {
+          "copy4lm.common.fileCountLimit": {
+            "type": "number",
+            "default": 30,
+            "minimum": 1,
+            "order": 1,
+            "description": "Maximum number of files to copy."
           },
-          "description": "File suffixes to include (for example: .kt, .ts)."
-        },
-        "copy4lm.common.strictMemoryRead": {
-          "type": "boolean",
-          "default": true,
-          "description": "Use the in-memory editor contents when a file is open."
-        },
-        "copy4lm.fileContent.headerFormat": {
-          "type": "string",
-          "default": "```$FILE_PATH",
-          "description": "Header template for each file."
-        },
-        "copy4lm.fileContent.footerFormat": {
-          "type": "string",
-          "default": "```",
-          "description": "Footer template for each file."
-        },
-        "copy4lm.fileContent.preText": {
-          "type": "string",
-          "default": "=====\n$PROJECT_NAME\n=====\n",
-          "description": "Text placed before all copied file contents."
-        },
-        "copy4lm.fileContent.postText": {
-          "type": "string",
-          "default": "",
-          "description": "Text placed after all copied file contents."
-        },
-        "copy4lm.fileContent.addExtraLineBetweenFiles": {
-          "type": "boolean",
-          "default": true,
-          "description": "Add a blank line between files."
-        },
-        "copy4lm.directoryStructure.preText": {
-          "type": "string",
-          "default": "",
-          "description": "Text placed before the directory structure output."
-        },
-        "copy4lm.directoryStructure.postText": {
-          "type": "string",
-          "default": "",
-          "description": "Text placed after the directory structure output."
+          "copy4lm.common.setMaxFileCount": {
+            "type": "boolean",
+            "default": true,
+            "order": 2,
+            "description": "Enforce the file count limit."
+          },
+          "copy4lm.common.maxFileSizeKB": {
+            "type": "number",
+            "default": 500,
+            "minimum": 1,
+            "order": 3,
+            "description": "Maximum file size (KB) to copy."
+          },
+          "copy4lm.common.strictMemoryRead": {
+            "type": "boolean",
+            "default": true,
+            "order": 4,
+            "description": "Use the in-memory editor contents when a file is open."
+          },
+          "copy4lm.common.respectGitIgnore": {
+            "type": "boolean",
+            "default": true,
+            "order": 5,
+            "description": "Respect .gitignore when collecting files and directories."
+          },
+          "copy4lm.common.useFilenameFilters": {
+            "type": "boolean",
+            "default": false,
+            "order": 6,
+            "description": "Only include files that match the filename filters."
+          },
+          "copy4lm.common.filenameFilters": {
+            "type": "array",
+            "default": [],
+            "order": 7,
+            "items": {
+              "type": "string"
+            },
+            "description": "File suffixes to include (for example: .kt, .ts)."
+          }
+        }
+      },
+      {
+        "id": "copy4lm.fileContent",
+        "title": "Copy 4 LM: File Content",
+        "properties": {
+          "copy4lm.fileContent.preText": {
+            "type": "string",
+            "default": "=====\n$PROJECT_NAME\n=====\n",
+            "order": 1,
+            "description": "Text placed before all copied file contents."
+          },
+          "copy4lm.fileContent.headerFormat": {
+            "type": "string",
+            "default": "```$FILE_PATH",
+            "order": 2,
+            "description": "Header template for each file."
+          },
+          "copy4lm.fileContent.footerFormat": {
+            "type": "string",
+            "default": "```",
+            "order": 3,
+            "description": "Footer template for each file."
+          },
+          "copy4lm.fileContent.addExtraLineBetweenFiles": {
+            "type": "boolean",
+            "default": true,
+            "order": 4,
+            "description": "Add a blank line between files."
+          },
+          "copy4lm.fileContent.postText": {
+            "type": "string",
+            "default": "",
+            "order": 5,
+            "description": "Text placed after all copied file contents."
+          }
+        }
+      },
+      {
+        "id": "copy4lm.directoryStructure",
+        "title": "Copy 4 LM: Directory Structure",
+        "properties": {
+          "copy4lm.directoryStructure.preText": {
+            "type": "string",
+            "default": "",
+            "order": 1,
+            "description": "Text placed before the directory structure output."
+          },
+          "copy4lm.directoryStructure.postText": {
+            "type": "string",
+            "default": "",
+            "order": 2,
+            "description": "Text placed after the directory structure output."
+          }
         }
       }
-    }
+    ]
   },
   "scripts": {
     "build": "node esbuild.config.mjs",
