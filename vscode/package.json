@@ -90,20 +90,20 @@
             "type": "number",
             "default": 30,
             "minimum": 1,
-            "order": 1,
+            "order": 7,
             "description": "Maximum number of files to copy."
           },
           "copy4lm.common.setMaxFileCount": {
             "type": "boolean",
             "default": true,
-            "order": 2,
+            "order": 6,
             "description": "Enforce the file count limit."
           },
           "copy4lm.common.maxFileSizeKB": {
             "type": "number",
             "default": 500,
             "minimum": 1,
-            "order": 3,
+            "order": 5,
             "description": "Maximum file size (KB) to copy."
           },
           "copy4lm.common.strictMemoryRead": {
@@ -115,19 +115,19 @@
           "copy4lm.common.respectGitIgnore": {
             "type": "boolean",
             "default": true,
-            "order": 5,
+            "order": 3,
             "description": "Respect .gitignore when collecting files and directories."
           },
           "copy4lm.common.useFilenameFilters": {
             "type": "boolean",
             "default": false,
-            "order": 6,
+            "order": 2,
             "description": "Only include files that match the filename filters."
           },
           "copy4lm.common.filenameFilters": {
             "type": "array",
             "default": [],
-            "order": 7,
+            "order": 1,
             "items": {
               "type": "string"
             },
@@ -142,13 +142,13 @@
           "copy4lm.fileContent.preText": {
             "type": "string",
             "default": "=====\n$PROJECT_NAME\n=====\n",
-            "order": 1,
+            "order": 5,
             "description": "Text placed before all copied file contents."
           },
           "copy4lm.fileContent.headerFormat": {
             "type": "string",
             "default": "```$FILE_PATH",
-            "order": 2,
+            "order": 4,
             "description": "Header template for each file."
           },
           "copy4lm.fileContent.footerFormat": {
@@ -160,13 +160,13 @@
           "copy4lm.fileContent.addExtraLineBetweenFiles": {
             "type": "boolean",
             "default": true,
-            "order": 4,
+            "order": 2,
             "description": "Add a blank line between files."
           },
           "copy4lm.fileContent.postText": {
             "type": "string",
             "default": "",
-            "order": 5,
+            "order": 1,
             "description": "Text placed after all copied file contents."
           }
         }
@@ -178,13 +178,13 @@
           "copy4lm.directoryStructure.preText": {
             "type": "string",
             "default": "",
-            "order": 1,
+            "order": 2,
             "description": "Text placed before the directory structure output."
           },
           "copy4lm.directoryStructure.postText": {
             "type": "string",
             "default": "",
-            "order": 2,
+            "order": 1,
             "description": "Text placed after the directory structure output."
           }
         }
