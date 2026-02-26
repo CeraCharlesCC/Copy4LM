@@ -16,14 +16,8 @@
     "vscode": "^1.86.0"
   },
   "categories": [
-    "Productivity",
+    "AI",
     "Other"
-  ],
-  "activationEvents": [
-    "onCommand:copy4lm.copySelection",
-    "onCommand:copy4lm.copyOpenEditors",
-    "onCommand:copy4lm.copyDirectoryStructure",
-    "onCommand:copy4lm.copyCurrentFile"
   ],
   "main": "./dist/extension.js",
   "contributes": {
