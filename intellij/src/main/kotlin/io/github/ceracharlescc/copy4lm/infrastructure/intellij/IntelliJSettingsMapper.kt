@@ -1,8 +1,8 @@
 package io.github.ceracharlescc.copy4lm.infrastructure.intellij
 
 import io.github.ceracharlescc.copy4lm.Copy4LMSettings
-import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
 
 internal object IntelliJSettingsMapper {
@@ -39,35 +39,19 @@ internal object IntelliJSettingsMapper {
         )
     }
 
-    fun formatDirectoryStructureText(
-        state: Copy4LMSettings.State,
-        projectName: String,
-        directoryStructure: String
-    ): String {
+    fun toDirectoryStructureOptions(state: Copy4LMSettings.State, projectName: String): DirectoryStructureOptions {
+        val common = state.common
         val dirState = state.directoryStructure
-
-        val formattedPre = PlaceholderFormatter.format(
-            template = dirState.preText,
-            projectName = projectName,
-            directoryStructure = directoryStructure
+        return DirectoryStructureOptions(
+            preText = dirState.preText,
+            postText = dirState.postText,
+            fileCountLimit = common.fileCountLimit,
+            setMaxFileCount = common.setMaxFileCount,
+            filenameFilters = common.filenameFilters,
+            useFilenameFilters = common.useFilenameFilters,
+            respectGitIgnore = common.respectGitIgnore,
+            maxFileSizeKB = common.maxFileSizeKB,
+            projectName = projectName
         )
-
-        val formattedPost = PlaceholderFormatter.format(
-            template = dirState.postText,
-            projectName = projectName,
-            directoryStructure = directoryStructure
-        )
-
-        return buildString {
-            if (formattedPre.isNotBlank()) {
-                append(formattedPre)
-                if (!formattedPre.endsWith("\n")) append("\n")
-            }
-            append(directoryStructure)
-            if (formattedPost.isNotBlank()) {
-                if (!directoryStructure.endsWith("\n")) append("\n")
-                append(formattedPost)
-            }
-        }
     }
 }

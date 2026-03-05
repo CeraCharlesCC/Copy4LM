@@ -5,6 +5,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
+import io.github.ceracharlescc.copy4lm.domain.vo.CopyDefaults
 
 @Service(Service.Level.PROJECT)
 @State(
@@ -20,27 +21,27 @@ internal class Copy4LMSettings : PersistentStateComponent<Copy4LMSettings.State>
     )
 
     data class CommonState(
-        var fileCountLimit: Int = 30,
-        var setMaxFileCount: Boolean = true,
-        var maxFileSizeKB: Int = 500,
-        var useFilenameFilters: Boolean = false,
+        var fileCountLimit: Int = CopyDefaults.FILE_COUNT_LIMIT,
+        var setMaxFileCount: Boolean = CopyDefaults.SET_MAX_FILE_COUNT,
+        var maxFileSizeKB: Int = CopyDefaults.MAX_FILE_SIZE_KB,
+        var useFilenameFilters: Boolean = CopyDefaults.USE_FILENAME_FILTERS,
         var filenameFilters: List<String> = listOf(),
-        var respectGitIgnore: Boolean = true,
-        var strictMemoryRead: Boolean = true,
+        var respectGitIgnore: Boolean = CopyDefaults.RESPECT_GIT_IGNORE,
+        var strictMemoryRead: Boolean = CopyDefaults.STRICT_MEMORY_READ,
         var showCopyNotification: Boolean = true
     )
 
     data class FileContentState(
-        var headerFormat: String = $$"```$FILE_PATH",
-        var footerFormat: String = "```",
-        var preText: String = "",
-        var postText: String = "",
-        var addExtraLineBetweenFiles: Boolean = true
+        var headerFormat: String = CopyDefaults.HEADER_FORMAT,
+        var footerFormat: String = CopyDefaults.FOOTER_FORMAT,
+        var preText: String = CopyDefaults.FILE_CONTENT_PRE_TEXT,
+        var postText: String = CopyDefaults.EMPTY_TEXT,
+        var addExtraLineBetweenFiles: Boolean = CopyDefaults.ADD_EXTRA_LINE_BETWEEN_FILES
     )
 
     data class DirectoryStructureState(
-        var preText: String = "",
-        var postText: String = ""
+        var preText: String = CopyDefaults.EMPTY_TEXT,
+        var postText: String = CopyDefaults.EMPTY_TEXT
     )
 
     private var myState = State()

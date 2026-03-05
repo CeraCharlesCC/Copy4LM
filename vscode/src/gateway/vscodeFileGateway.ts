@@ -55,7 +55,7 @@ export class VsCodeFileGateway implements JsFileGateway {
     }
   }
 
-  readText(file: JsFileRef, strictMemoryRead: boolean): string {
+  readText(file: JsFileRef, strictMemoryRead: boolean): string | null {
     try {
       const document = vscode.workspace.textDocuments.find((doc) =>
         normalizeForCompare(doc.uri.fsPath) === normalizeForCompare(file.path)
@@ -72,7 +72,7 @@ export class VsCodeFileGateway implements JsFileGateway {
       return fs.readFileSync(file.path, 'utf8');
     } catch (error) {
       this.logger?.error(`Failed to read file contents for ${file.path}`, String(error));
-      return '';
+      return null;
     }
   }
 
@@ -104,16 +104,20 @@ export class VsCodeFileGateway implements JsFileGateway {
   }
 
   relativePath(file: JsFileRef): string {
+    const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
     const fileUri = vscode.Uri.file(file.path);
     const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri)
-      ?? vscode.workspace.workspaceFolders?.[0];
+      ?? workspaceFolders[0];
 
     if (!workspaceFolder) {
       return toPosixPath(file.path);
     }
 
     const relative = path.relative(workspaceFolder.uri.fsPath, file.path);
-    return toPosixPath(relative || file.name);
+    const baseRelativePath = toPosixPath(relative || file.name);
+    return workspaceFolders.length > 1
+      ? `${workspaceFolder.name}/${baseRelativePath}`
+      : baseRelativePath;
   }
 
   isGitIgnored(file: JsFileRef): boolean {

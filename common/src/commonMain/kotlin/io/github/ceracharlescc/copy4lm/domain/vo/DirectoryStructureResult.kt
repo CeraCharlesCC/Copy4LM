@@ -1,9 +1,7 @@
 package io.github.ceracharlescc.copy4lm.domain.vo
 
-data class CopyResult(
+data class DirectoryStructureResult(
     val clipboardText: String,
-    val copiedFileCount: Int,
-    val failedFileCount: Int,
-    val stats: CopyStats,
+    val collectedFileCount: Int,
     val fileLimitReached: Boolean
 )

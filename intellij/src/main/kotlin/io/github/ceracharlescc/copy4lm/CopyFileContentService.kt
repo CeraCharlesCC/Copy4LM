@@ -6,9 +6,8 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.VirtualFile
-import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyDirectoryStructureUseCase
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
-import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
 import io.github.ceracharlescc.copy4lm.domain.vo.ClipboardCopyOutcome
 import io.github.ceracharlescc.copy4lm.domain.vo.NotificationKind
 import io.github.ceracharlescc.copy4lm.domain.vo.NotificationPayload
@@ -30,6 +29,11 @@ internal class CopyFileContentService(private val project: Project) {
         val options = IntelliJSettingsMapper.toCopyOptions(context.state, context.projectName)
         val useCase = CopyFilesUseCase(context.fileGateway, context.loggerPort)
         val result = useCase.execute(context.fileRefs, options)
+        if (result.copiedFileCount == 0) {
+            notifyNoFilesCopied(result.failedFileCount)
+            notifyLimitReachedIfNeeded(context.state, result.fileLimitReached)
+            return
+        }
         val fileCountMessage =
             if (result.copiedFileCount == 1) "1 file copied." else "${result.copiedFileCount} files copied."
 
@@ -46,10 +50,16 @@ internal class CopyFileContentService(private val project: Project) {
         val outcome = ClipboardCopyOutcome(
             text = result.clipboardText,
             fileLimitReached = result.fileLimitReached,
-            successNotifications = listOf(
-                NotificationPayload(statisticsMessage, NotificationKind.Information),
-                NotificationPayload("<html><b>$fileCountMessage</b></html>", NotificationKind.Information)
-            )
+            successNotifications = buildList {
+                add(NotificationPayload(statisticsMessage, NotificationKind.Information))
+                add(NotificationPayload("<html><b>$fileCountMessage</b></html>", NotificationKind.Information))
+                if (result.failedFileCount > 0) {
+                    val failureMessage =
+                        if (result.failedFileCount == 1) "1 file was skipped because it could not be read."
+                        else "${result.failedFileCount} files were skipped because they could not be read."
+                    add(NotificationPayload("<html><b>$failureMessage</b></html>", NotificationKind.Warning))
+                }
+            }
         )
 
         copyToClipboardAndNotify(outcome, context.state)
@@ -57,21 +67,12 @@ internal class CopyFileContentService(private val project: Project) {
 
     fun copyDirectoryStructure(files: Array<VirtualFile>) {
         val context = prepareContext(files) ?: return
-        val collectionOptions = IntelliJSettingsMapper.toFileCollectionOptions(context.state)
-        val collector = FileCollector(context.fileGateway, context.loggerPort, collectionOptions)
-        val collected = collector.collect(context.fileRefs)
-        val directoryStructure = DirectoryStructureBuilder.build(
-            rootName = context.projectName,
-            relativePaths = collected.relativePaths
-        )
-        val finalText = IntelliJSettingsMapper.formatDirectoryStructureText(
-            state = context.state,
-            projectName = context.projectName,
-            directoryStructure = directoryStructure
-        )
+        val options = IntelliJSettingsMapper.toDirectoryStructureOptions(context.state, context.projectName)
+        val useCase = CopyDirectoryStructureUseCase(context.fileGateway, context.loggerPort)
+        val result = useCase.execute(context.fileRefs, options)
         val outcome = ClipboardCopyOutcome(
-            text = finalText,
-            fileLimitReached = collected.fileLimitReached,
+            text = result.clipboardText,
+            fileLimitReached = result.fileLimitReached,
             successNotifications = listOf(
                 NotificationPayload("<html><b>Directory structure copied.</b></html>", NotificationKind.Information)
             )
@@ -87,15 +88,14 @@ internal class CopyFileContentService(private val project: Project) {
             return null
         }
 
-        val repoRoot = ProjectRootManager.getInstance(project).contentRoots.firstOrNull()
-        val projectName = repoRoot?.name ?: project.name
-        val fileGateway = IntelliJFileGateway(project, repoRoot, logger)
+        val contentRoots = ProjectRootManager.getInstance(project).contentRoots.toList()
+        val projectName = if (contentRoots.size == 1) contentRoots.single().name else project.name
+        val fileGateway = IntelliJFileGateway(project, contentRoots, logger)
         val loggerPort = IntelliJLoggerAdapter(logger)
         val fileRefs = IntelliJFileGateway.toFileRefs(files)
 
         return PreparedContext(
             state = state,
-            repoRoot = repoRoot,
             projectName = projectName,
             fileGateway = fileGateway,
             loggerPort = loggerPort,
@@ -120,6 +120,15 @@ internal class CopyFileContentService(private val project: Project) {
             </html>
         """.trimIndent()
         NotificationUtil.showWithSettingsAction(project, msg, NotificationType.WARNING)
+    }
+
+    private fun notifyNoFilesCopied(failedFileCount: Int) {
+        val message = when {
+            failedFileCount == 0 -> "No eligible text files were copied."
+            failedFileCount == 1 -> "No files were copied because 1 file could not be read."
+            else -> "No files were copied because $failedFileCount files could not be read."
+        }
+        NotificationUtil.show(project, message, NotificationType.WARNING)
     }
 
     private fun toNotificationType(kind: NotificationKind): NotificationType =

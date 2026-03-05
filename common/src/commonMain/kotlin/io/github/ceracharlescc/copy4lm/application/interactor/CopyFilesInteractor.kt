@@ -3,11 +3,11 @@ package io.github.ceracharlescc.copy4lm.application.interactor
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.domain.service.ClipboardTextBuilder
+import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
+import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
-import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
-import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 
 internal class CopyFilesInteractor(
     private val fileGateway: FileGateway,
@@ -16,15 +16,27 @@ internal class CopyFilesInteractor(
 ) {
     fun run(files: List<FileRef>): CopyResult {
         val collected = fileCollector.collect(files)
-        val plannedFiles = collected.files
+        val readableFiles = mutableListOf<ReadableFile>()
+        var failedFileCount = 0
 
-        // Build directory structure from collected files
+        for (planned in collected.files) {
+            val content = fileGateway.readText(planned.fileRef, options.strictMemoryRead)
+            if (content == null) {
+                failedFileCount++
+                continue
+            }
+            readableFiles += ReadableFile(
+                relativePath = planned.relativePath,
+                content = content
+            )
+        }
+
+        // Build directory structure only from files that will actually be copied.
         val directoryStructure = DirectoryStructureBuilder.build(
             rootName = options.projectName,
-            relativePaths = collected.relativePaths
+            relativePaths = readableFiles.map { it.relativePath }
         )
 
-        // Phase 2: Render clipboard text with directory structure context
         val textBuilder = ClipboardTextBuilder(
             preText = PlaceholderFormatter.format(options.preText, options.projectName, directoryStructure = directoryStructure),
             postText = PlaceholderFormatter.format(options.postText, options.projectName, directoryStructure = directoryStructure),
@@ -33,8 +45,7 @@ internal class CopyFilesInteractor(
 
         var stats = CopyStats()
 
-        for (planned in plannedFiles) {
-            val content = fileGateway.readText(planned.fileRef, options.strictMemoryRead)
+        for (planned in readableFiles) {
             val header = PlaceholderFormatter.format(
                 options.headerFormat,
                 options.projectName,
@@ -48,15 +59,21 @@ internal class CopyFilesInteractor(
                 directoryStructure
             )
 
-            textBuilder.addFile(header, content, footer)
-            stats = stats.plus(content)
+            textBuilder.addFile(header, planned.content, footer)
+            stats = stats.plus(planned.content)
         }
 
         return CopyResult(
             clipboardText = textBuilder.build(),
-            copiedFileCount = plannedFiles.size,
+            copiedFileCount = readableFiles.size,
+            failedFileCount = failedFileCount,
             stats = stats,
             fileLimitReached = collected.fileLimitReached
         )
     }
+
+    private data class ReadableFile(
+        val relativePath: String,
+        val content: String
+    )
 }
