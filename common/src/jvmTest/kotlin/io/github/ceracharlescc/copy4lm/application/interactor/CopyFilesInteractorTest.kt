@@ -63,6 +63,7 @@ internal class CopyFilesInteractorTest {
         ).joinToString("\n")
 
         assertEquals(2, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertFalse(result.fileLimitReached)
         assertEquals(expected, result.clipboardText)
 
@@ -106,6 +107,7 @@ internal class CopyFilesInteractorTest {
         val result = interactor.run(listOf(txt))
 
         assertEquals(0, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertFalse(result.fileLimitReached)
         assertEquals("", result.clipboardText)
         assertEquals(0, result.stats.totalChars)
@@ -149,8 +151,46 @@ internal class CopyFilesInteractorTest {
         val result = interactor.run(listOf(a, b))
 
         assertEquals(1, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertTrue(result.fileLimitReached)
         assertTrue(result.clipboardText.contains("A"))
         assertFalse(result.clipboardText.contains("B"))
+    }
+
+    @Test
+    fun `skips unreadable files and excludes them from directory structure`() {
+        val readable = FakeFileRef("A.kt", "/repo/src/A.kt")
+        val unreadable = FakeFileRef("B.kt", "/repo/src/B.kt")
+
+        val gateway = FakeFileGateway(
+            contents = mapOf(
+                readable.path to "aaa",
+                unreadable.path to "bbb"
+            ),
+            unreadablePaths = setOf(unreadable.path)
+        )
+
+        val options = CopyOptions(
+            projectName = "MyProject",
+            preText = Placeholders.DIRECTORY_STRUCTURE,
+            headerFormat = "H:${Placeholders.FILE_PATH}",
+            footerFormat = "F:${Placeholders.FILE_PATH}",
+            addExtraLineBetweenFiles = false,
+            setMaxFileCount = false
+        )
+
+        val collector = FileCollector(
+            fileGateway = gateway,
+            logger = CapturingLogger(),
+            options = options.toFileCollectionOptions()
+        )
+        val interactor = CopyFilesInteractor(gateway, options, collector)
+
+        val result = interactor.run(listOf(readable, unreadable))
+
+        assertEquals(1, result.copiedFileCount)
+        assertEquals(1, result.failedFileCount)
+        assertFalse(result.clipboardText.contains("src/B.kt"))
+        assertTrue(result.clipboardText.contains("src/A.kt"))
     }
 }

@@ -6,7 +6,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.ChangeListManager
-import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
@@ -26,31 +26,33 @@ class VirtualFileRef(val virtualFile: VirtualFile) : FileRef {
  */
 internal class IntelliJFileGateway(
     private val project: Project,
-    private val repositoryRoot: VirtualFile?,
+    private val contentRoots: List<VirtualFile>,
     private val logger: Logger
 ) : FileGateway {
     private val gitIgnoreCache = mutableMapOf<VirtualFile, Boolean>()
+    private val sortedContentRoots = contentRoots.sortedByDescending { it.path.length }
 
     override fun childrenOf(dir: FileRef): List<FileRef> {
         val vf = (dir as VirtualFileRef).virtualFile
         return vf.children.map { VirtualFileRef(it) }
     }
 
-    override fun readText(file: FileRef, strictMemoryRead: Boolean): String {
+    override fun readText(file: FileRef, strictMemoryRead: Boolean): String? {
         val vf = (file as VirtualFileRef).virtualFile
         return try {
             val cached = FileDocumentManager.getInstance().getCachedDocument(vf)?.text
+            val diskText = { String(vf.contentsToByteArray(), vf.charset) }
 
             if (!strictMemoryRead) {
-                cached ?: String(vf.contentsToByteArray(), Charsets.UTF_8)
+                cached ?: diskText()
             } else {
                 val isOpen = FileEditorManager.getInstance(project).isFileOpen(vf)
-                if (isOpen) cached ?: String(vf.contentsToByteArray(), Charsets.UTF_8)
-                else String(vf.contentsToByteArray(), Charsets.UTF_8)
+                if (isOpen) cached ?: diskText()
+                else diskText()
             }
         } catch (t: Throwable) {
             logger.error("Failed to read file contents for ${vf.path}: ${t.message}", t)
-            ""
+            null
         }
     }
 
@@ -66,7 +68,13 @@ internal class IntelliJFileGateway(
 
     override fun relativePath(file: FileRef): String {
         val vf = (file as VirtualFileRef).virtualFile
-        return repositoryRoot?.let { VfsUtil.getRelativePath(vf, it, '/') } ?: vf.path
+        val contentRoot = sortedContentRoots.firstOrNull { VfsUtilCore.isAncestor(it, vf, false) } ?: return vf.path
+        val relativePath = VfsUtilCore.getRelativePath(vf, contentRoot, '/') ?: return vf.path
+        return if (sortedContentRoots.size > 1) {
+            "${contentRoot.name}/$relativePath"
+        } else {
+            relativePath
+        }
     }
 
     override fun isGitIgnored(file: FileRef): Boolean {

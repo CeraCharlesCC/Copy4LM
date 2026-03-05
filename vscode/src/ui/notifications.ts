@@ -7,7 +7,10 @@ type JsDirectoryStructureResult = c4.io.github.ceracharlescc.copy4lm.JsDirectory
 export function showCopyResult(result: JsCopyResult): void {
   const fileCountLabel = result.copiedFileCount === 1 ? '1 file' : `${result.copiedFileCount} files`;
   const stats = result.stats;
-  const message = `Copy 4 LM: ${fileCountLabel} copied. Chars ${stats.totalChars}, lines ${stats.totalLines}, words ${stats.totalWords}, tokens ${stats.totalTokens}.`;
+  const failureSuffix = result.failedFileCount > 0
+    ? ` Skipped ${result.failedFileCount} unreadable ${result.failedFileCount === 1 ? 'file' : 'files'}.`
+    : '';
+  const message = `Copy 4 LM: ${fileCountLabel} copied.${failureSuffix} Chars ${stats.totalChars}, lines ${stats.totalLines}, words ${stats.totalWords}, tokens ${stats.totalTokens}.`;
   void vscode.window.showInformationMessage(message);
 }
 
@@ -19,6 +22,10 @@ export function showFileLimitWarning(fileCountLimit: number): void {
   void vscode.window.showWarningMessage(
     `Copy 4 LM: File limit of ${fileCountLimit} files was reached.`
   );
+}
+
+export function showNoFilesCopied(message: string): void {
+  void vscode.window.showWarningMessage(`Copy 4 LM: ${message}`);
 }
 
 export function showError(message: string): void {

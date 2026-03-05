@@ -2,20 +2,18 @@
 
 package io.github.ceracharlescc.copy4lm
 
-import io.github.ceracharlescc.copy4lm.application.interactor.FileCollector
 import io.github.ceracharlescc.copy4lm.application.port.FileGateway
 import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyDirectoryStructureUseCase
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
 import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
-import io.github.ceracharlescc.copy4lm.domain.service.PlaceholderFormatter
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
-import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureResult
 import kotlin.js.JsExport
-
-private val DEFAULT_COPY_OPTIONS = CopyOptions()
 
 @JsExport
 external interface JsFileRef {
@@ -27,7 +25,7 @@ external interface JsFileRef {
 @JsExport
 external interface JsFileGateway {
     fun childrenOf(dir: JsFileRef): Array<JsFileRef>
-    fun readText(file: JsFileRef, strictMemoryRead: Boolean): String
+    fun readText(file: JsFileRef, strictMemoryRead: Boolean): String?
     fun isBinary(file: JsFileRef): Boolean
     fun sizeBytes(file: JsFileRef): Double
     fun relativePath(file: JsFileRef): String
@@ -41,60 +39,20 @@ external interface JsLogger {
 }
 
 @JsExport
-data class JsCopyOptions(
-    val headerFormat: String = DEFAULT_COPY_OPTIONS.headerFormat,
-    val footerFormat: String = DEFAULT_COPY_OPTIONS.footerFormat,
-    val preText: String = DEFAULT_COPY_OPTIONS.preText,
-    val postText: String = DEFAULT_COPY_OPTIONS.postText,
-    val fileCountLimit: Int = DEFAULT_COPY_OPTIONS.fileCountLimit,
-    val setMaxFileCount: Boolean = DEFAULT_COPY_OPTIONS.setMaxFileCount,
-    val filenameFilters: Array<String> = DEFAULT_COPY_OPTIONS.filenameFilters.toTypedArray(),
-    val useFilenameFilters: Boolean = DEFAULT_COPY_OPTIONS.useFilenameFilters,
-    val respectGitIgnore: Boolean = DEFAULT_COPY_OPTIONS.respectGitIgnore,
-    val addExtraLineBetweenFiles: Boolean = DEFAULT_COPY_OPTIONS.addExtraLineBetweenFiles,
-    val strictMemoryRead: Boolean = DEFAULT_COPY_OPTIONS.strictMemoryRead,
-    val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
-    val projectName: String = DEFAULT_COPY_OPTIONS.projectName
-) {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class.js != other::class.js) return false
-
-        other as JsCopyOptions
-
-        if (fileCountLimit != other.fileCountLimit) return false
-        if (setMaxFileCount != other.setMaxFileCount) return false
-        if (useFilenameFilters != other.useFilenameFilters) return false
-        if (respectGitIgnore != other.respectGitIgnore) return false
-        if (addExtraLineBetweenFiles != other.addExtraLineBetweenFiles) return false
-        if (strictMemoryRead != other.strictMemoryRead) return false
-        if (maxFileSizeKB != other.maxFileSizeKB) return false
-        if (headerFormat != other.headerFormat) return false
-        if (footerFormat != other.footerFormat) return false
-        if (preText != other.preText) return false
-        if (postText != other.postText) return false
-        if (!filenameFilters.contentEquals(other.filenameFilters)) return false
-        if (projectName != other.projectName) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = fileCountLimit
-        result = 31 * result + setMaxFileCount.hashCode()
-        result = 31 * result + useFilenameFilters.hashCode()
-        result = 31 * result + respectGitIgnore.hashCode()
-        result = 31 * result + addExtraLineBetweenFiles.hashCode()
-        result = 31 * result + strictMemoryRead.hashCode()
-        result = 31 * result + maxFileSizeKB
-        result = 31 * result + headerFormat.hashCode()
-        result = 31 * result + footerFormat.hashCode()
-        result = 31 * result + preText.hashCode()
-        result = 31 * result + postText.hashCode()
-        result = 31 * result + filenameFilters.contentHashCode()
-        result = 31 * result + projectName.hashCode()
-        return result
-    }
+external interface JsCopyOptions {
+    val headerFormat: String
+    val footerFormat: String
+    val preText: String
+    val postText: String
+    val fileCountLimit: Int
+    val setMaxFileCount: Boolean
+    val filenameFilters: Array<String>
+    val useFilenameFilters: Boolean
+    val respectGitIgnore: Boolean
+    val addExtraLineBetweenFiles: Boolean
+    val strictMemoryRead: Boolean
+    val maxFileSizeKB: Int
+    val projectName: String
 }
 
 @JsExport
@@ -109,26 +67,28 @@ data class JsCopyStats(
 data class JsCopyResult(
     val clipboardText: String,
     val copiedFileCount: Int,
+    val failedFileCount: Int,
     val stats: JsCopyStats,
     val fileLimitReached: Boolean
 )
 
 @JsExport
-data class JsDirectoryStructureOptions(
-    val preText: String = "",
-    val postText: String = "",
-    val fileCountLimit: Int = DEFAULT_COPY_OPTIONS.fileCountLimit,
-    val setMaxFileCount: Boolean = DEFAULT_COPY_OPTIONS.setMaxFileCount,
-    val filenameFilters: Array<String> = DEFAULT_COPY_OPTIONS.filenameFilters.toTypedArray(),
-    val useFilenameFilters: Boolean = DEFAULT_COPY_OPTIONS.useFilenameFilters,
-    val respectGitIgnore: Boolean = DEFAULT_COPY_OPTIONS.respectGitIgnore,
-    val maxFileSizeKB: Int = DEFAULT_COPY_OPTIONS.maxFileSizeKB,
-    val projectName: String = DEFAULT_COPY_OPTIONS.projectName
-)
+external interface JsDirectoryStructureOptions {
+    val preText: String
+    val postText: String
+    val fileCountLimit: Int
+    val setMaxFileCount: Boolean
+    val filenameFilters: Array<String>
+    val useFilenameFilters: Boolean
+    val respectGitIgnore: Boolean
+    val maxFileSizeKB: Int
+    val projectName: String
+}
 
 @JsExport
 data class JsDirectoryStructureResult(
     val clipboardText: String,
+    val collectedFileCount: Int,
     val fileLimitReached: Boolean
 )
 
@@ -155,17 +115,8 @@ fun copyDirectoryStructure(
 ): JsDirectoryStructureResult {
     val fileGateway = JsFileGatewayAdapter(gateway)
     val loggerPort = logger?.let { JsLoggerAdapter(it) } ?: NoopLogger
-    val collector = FileCollector(fileGateway, loggerPort, options.toFileCollectionOptions())
-    val collected = collector.collect(files.map { JsFileRefAdapter(it) })
-    val directoryStructure = DirectoryStructureBuilder.build(
-        rootName = options.projectName,
-        relativePaths = collected.relativePaths
-    )
-    val finalText = formatDirectoryStructureText(options, directoryStructure)
-    return JsDirectoryStructureResult(
-        clipboardText = finalText,
-        fileLimitReached = collected.fileLimitReached
-    )
+    val useCase = CopyDirectoryStructureUseCase(fileGateway, loggerPort)
+    return useCase.execute(files.map { JsFileRefAdapter(it) }, options.toDirectoryStructureOptions()).toJsDirectoryStructureResult()
 }
 
 @JsExport
@@ -193,6 +144,7 @@ private fun CopyResult.toJsCopyResult(): JsCopyResult =
     JsCopyResult(
         clipboardText = clipboardText,
         copiedFileCount = copiedFileCount,
+        failedFileCount = failedFileCount,
         stats = stats.toJsCopyStats(),
         fileLimitReached = fileLimitReached
     )
@@ -205,44 +157,25 @@ private fun CopyStats.toJsCopyStats(): JsCopyStats =
         totalTokens = totalTokens
     )
 
-private fun JsDirectoryStructureOptions.toFileCollectionOptions(): FileCollectionOptions =
-    FileCollectionOptions(
+private fun JsDirectoryStructureOptions.toDirectoryStructureOptions(): DirectoryStructureOptions =
+    DirectoryStructureOptions(
+        preText = preText,
+        postText = postText,
         fileCountLimit = fileCountLimit,
         setMaxFileCount = setMaxFileCount,
         filenameFilters = filenameFilters.toList(),
         useFilenameFilters = useFilenameFilters,
         maxFileSizeKB = maxFileSizeKB,
-        respectGitIgnore = respectGitIgnore
+        respectGitIgnore = respectGitIgnore,
+        projectName = projectName
     )
 
-private fun formatDirectoryStructureText(
-    options: JsDirectoryStructureOptions,
-    directoryStructure: String
-): String {
-    val formattedPre = PlaceholderFormatter.format(
-        template = options.preText,
-        projectName = options.projectName,
-        directoryStructure = directoryStructure
+private fun DirectoryStructureResult.toJsDirectoryStructureResult(): JsDirectoryStructureResult =
+    JsDirectoryStructureResult(
+        clipboardText = clipboardText,
+        collectedFileCount = collectedFileCount,
+        fileLimitReached = fileLimitReached
     )
-
-    val formattedPost = PlaceholderFormatter.format(
-        template = options.postText,
-        projectName = options.projectName,
-        directoryStructure = directoryStructure
-    )
-
-    return buildString {
-        if (formattedPre.isNotBlank()) {
-            append(formattedPre)
-            if (!formattedPre.endsWith("\n")) append("\n")
-        }
-        append(directoryStructure)
-        if (formattedPost.isNotBlank()) {
-            if (!directoryStructure.endsWith("\n")) append("\n")
-            append(formattedPost)
-        }
-    }
-}
 
 private object NoopLogger : LoggerPort {
     override fun info(message: String) = Unit
@@ -262,7 +195,7 @@ private class JsFileGatewayAdapter(private val delegate: JsFileGateway) : FileGa
     override fun childrenOf(dir: FileRef): List<FileRef> =
         delegate.childrenOf(dir.unwrap()).map { JsFileRefAdapter(it) }
 
-    override fun readText(file: FileRef, strictMemoryRead: Boolean): String =
+    override fun readText(file: FileRef, strictMemoryRead: Boolean): String? =
         delegate.readText(file.unwrap(), strictMemoryRead)
 
     override fun isBinary(file: FileRef): Boolean =

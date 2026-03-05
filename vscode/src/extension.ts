@@ -15,7 +15,8 @@ import {
   showCopyResult,
   showDirectoryStructureResult,
   showError,
-  showFileLimitWarning
+  showFileLimitWarning,
+  showNoFilesCopied
 } from './ui/notifications';
 
 let outputChannel: vscode.OutputChannel | undefined;
@@ -75,6 +76,13 @@ function getOpenEditorUris(): vscode.Uri[] {
 
 function resolveProjectName(uris: vscode.Uri[]): string {
   const workspaceFolders = vscode.workspace.workspaceFolders ?? [];
+  if (workspaceFolders.length > 1) {
+    const workspaceFile = vscode.workspace.workspaceFile;
+    if (workspaceFile) {
+      return path.basename(workspaceFile.fsPath, path.extname(workspaceFile.fsPath));
+    }
+    return 'workspace';
+  }
   for (const uri of uris) {
     const folder = vscode.workspace.getWorkspaceFolder(uri);
     if (folder) {
@@ -148,6 +156,16 @@ async function copySelection(uri?: vscode.Uri, selectedUris?: vscode.Uri[]): Pro
 
   try {
     const result = copyFiles(fileRefs, options, gateway, logger);
+    if (result.copiedFileCount === 0) {
+      const noOpMessage = result.failedFileCount > 0
+        ? `No files were copied because ${result.failedFileCount} ${result.failedFileCount === 1 ? 'file could' : 'files could'} not be read.`
+        : 'No eligible text files were copied.';
+      showNoFilesCopied(noOpMessage);
+      if (result.fileLimitReached) {
+        showFileLimitWarning(options.fileCountLimit);
+      }
+      return;
+    }
     await vscode.env.clipboard.writeText(result.clipboardText);
     showCopyResult(result);
     if (result.fileLimitReached) {

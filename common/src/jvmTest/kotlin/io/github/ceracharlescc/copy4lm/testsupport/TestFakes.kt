@@ -13,6 +13,7 @@ internal data class FakeFileRef(
 internal class FakeFileGateway(
     private val children: Map<String, List<FakeFileRef>> = emptyMap(),
     private val contents: Map<String, String> = emptyMap(),
+    private val unreadablePaths: Set<String> = emptySet(),
     private val binaryPaths: Set<String> = emptySet(),
     private val ignoredPaths: Set<String> = emptySet(),
     private val sizesBytes: Map<String, Long> = emptyMap(),
@@ -25,8 +26,11 @@ internal class FakeFileGateway(
     override fun childrenOf(dir: FileRef): List<FileRef> =
         children[dir.path].orEmpty()
 
-    override fun readText(file: FileRef, strictMemoryRead: Boolean): String {
+    override fun readText(file: FileRef, strictMemoryRead: Boolean): String? {
         readCalls += (file.path to strictMemoryRead)
+        if (file.path in unreadablePaths) {
+            return null
+        }
         return contents[file.path].orEmpty()
     }
 

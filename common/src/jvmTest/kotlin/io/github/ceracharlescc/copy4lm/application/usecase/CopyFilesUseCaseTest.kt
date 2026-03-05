@@ -40,6 +40,7 @@ internal class CopyFilesUseCaseTest {
         val result = useCase.execute(listOf(dir), options)
 
         assertEquals(2, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertFalse(result.fileLimitReached)
 
         val expectedClipboard = listOf(
@@ -93,6 +94,7 @@ internal class CopyFilesUseCaseTest {
         )
 
         assertEquals(1, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertTrue(result.clipboardText.contains("keep"))
         assertFalse(result.clipboardText.contains("skip"))
         assertTrue(logger.infos.any { it.contains("Binary file") })
@@ -171,6 +173,7 @@ internal class CopyFilesUseCaseTest {
         )
 
         assertEquals(1, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertTrue(logger.infos.any { it.contains("already copied") })
     }
 
@@ -199,6 +202,7 @@ internal class CopyFilesUseCaseTest {
         )
 
         assertEquals(1, result.copiedFileCount)
+        assertEquals(0, result.failedFileCount)
         assertTrue(result.fileLimitReached)
         assertTrue(result.clipboardText.contains("A"))
         assertFalse(result.clipboardText.contains("B"))
@@ -238,11 +242,43 @@ internal class CopyFilesUseCaseTest {
             options = CopyOptions(respectGitIgnore = true)
         )
         assertEquals(0, skippedWhenEnabled.copiedFileCount)
+        assertEquals(0, skippedWhenEnabled.failedFileCount)
 
         val includedWhenDisabled = useCase.execute(
             files = listOf(ignored),
             options = CopyOptions(respectGitIgnore = false)
         )
         assertEquals(1, includedWhenDisabled.copiedFileCount)
+        assertEquals(0, includedWhenDisabled.failedFileCount)
+    }
+
+    @Test
+    fun `returns partial result when a file cannot be read`() {
+        val readable = FakeFileRef("A.kt", "/repo/A.kt")
+        val unreadable = FakeFileRef("B.kt", "/repo/B.kt")
+
+        val gateway = FakeFileGateway(
+            contents = mapOf(
+                readable.path to "keep",
+                unreadable.path to "skip"
+            ),
+            unreadablePaths = setOf(unreadable.path)
+        )
+        val logger = CapturingLogger()
+        val useCase = CopyFilesUseCase(gateway, logger)
+
+        val result = useCase.execute(
+            files = listOf(readable, unreadable),
+            options = CopyOptions(
+                headerFormat = $$"H:$FILE_PATH",
+                footerFormat = $$"F:$FILE_PATH",
+                setMaxFileCount = false
+            )
+        )
+
+        assertEquals(1, result.copiedFileCount)
+        assertEquals(1, result.failedFileCount)
+        assertTrue(result.clipboardText.contains("keep"))
+        assertFalse(result.clipboardText.contains("skip"))
     }
 }

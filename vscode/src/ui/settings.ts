@@ -10,8 +10,11 @@ type CommonOptions = {
   filenameFilters: string[];
   useFilenameFilters: boolean;
   respectGitIgnore: boolean;
-  strictMemoryRead: boolean;
   maxFileSizeKB: number;
+};
+
+type CopyCommonOptions = CommonOptions & {
+  strictMemoryRead: boolean;
 };
 
 const DEFAULTS = {
@@ -51,7 +54,7 @@ function getConfig(): vscode.WorkspaceConfiguration {
   return vscode.workspace.getConfiguration('copy4lm');
 }
 
-function readCommonOptions(config: vscode.WorkspaceConfiguration): CommonOptions {
+function readCommonOptions(config: vscode.WorkspaceConfiguration): CopyCommonOptions {
   return {
     fileCountLimit: clampMin(config.get('common.fileCountLimit', DEFAULTS.common.fileCountLimit), 1),
     setMaxFileCount: config.get('common.setMaxFileCount', DEFAULTS.common.setMaxFileCount),
@@ -62,25 +65,6 @@ function readCommonOptions(config: vscode.WorkspaceConfiguration): CommonOptions
     maxFileSizeKB: clampMin(config.get('common.maxFileSizeKB', DEFAULTS.common.maxFileSizeKB), 1)
   };
 }
-
-function notImplemented(methodName: string): never {
-  throw new Error(`${methodName} is not implemented for VS Code settings objects.`);
-}
-
-const interopMethodStubs = {
-  copy(..._args: unknown[]): never {
-    return notImplemented('copy');
-  },
-  toString(): never {
-    return notImplemented('toString');
-  },
-  hashCode(): never {
-    return notImplemented('hashCode');
-  },
-  equals(_other: c4.Nullable<any>): never {
-    return notImplemented('equals');
-  }
-};
 
 export function getCopyOptions(projectName: string): JsCopyOptions {
   const config = getConfig();
@@ -96,20 +80,19 @@ export function getCopyOptions(projectName: string): JsCopyOptions {
     ),
     postText: config.get('fileContent.postText', DEFAULTS.fileContent.postText),
     ...common,
-    projectName,
-    ...interopMethodStubs
-  } as JsCopyOptions;
+    projectName
+  };
 }
 
 export function getDirectoryStructureOptions(projectName: string): JsDirectoryStructureOptions {
   const config = getConfig();
   const common = readCommonOptions(config);
+  const { strictMemoryRead: _strictMemoryRead, ...directoryCommon } = common;
 
   return {
     preText: config.get('directoryStructure.preText', DEFAULTS.directoryStructure.preText),
     postText: config.get('directoryStructure.postText', DEFAULTS.directoryStructure.postText),
-    ...common,
-    projectName,
-    ...interopMethodStubs
-  } as JsDirectoryStructureOptions;
+    ...directoryCommon,
+    projectName
+  };
 }

@@ -23,7 +23,7 @@ interface FileGateway {
      * @param file The file to read
      * @param strictMemoryRead If true, only reads from memory if file is open in editor
      */
-    fun readText(file: FileRef, strictMemoryRead: Boolean): String
+    fun readText(file: FileRef, strictMemoryRead: Boolean): String?
 
     /**
      * Checks if the file is a binary file.
