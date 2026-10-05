@@ -18,6 +18,12 @@ export function showDirectoryStructureResult(_result: JsDirectoryStructureResult
   void vscode.window.showInformationMessage('Copy 4 LM: Directory structure copied.');
 }
 
+export function showPathsCopied(count: number): void {
+  void vscode.window.showInformationMessage(
+    `Copy 4 LM: ${count} ${count === 1 ? 'path' : 'paths'} copied.`
+  );
+}
+
 export function showFileLimitWarning(fileCountLimit: number): void {
   void vscode.window.showWarningMessage(
     `Copy 4 LM: File limit of ${fileCountLimit} files was reached.`

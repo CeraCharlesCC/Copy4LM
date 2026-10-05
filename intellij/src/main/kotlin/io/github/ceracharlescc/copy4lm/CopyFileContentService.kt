@@ -5,9 +5,12 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
+import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.openapi.vfs.VfsUtilCore
 import com.intellij.openapi.vfs.VirtualFile
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyDirectoryStructureUseCase
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyPathsUseCase
 import io.github.ceracharlescc.copy4lm.domain.vo.ClipboardCopyOutcome
 import io.github.ceracharlescc.copy4lm.domain.vo.NotificationKind
 import io.github.ceracharlescc.copy4lm.domain.vo.NotificationPayload
@@ -15,6 +18,7 @@ import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJClipboard
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJFileGateway
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJLoggerAdapter
 import io.github.ceracharlescc.copy4lm.infrastructure.intellij.IntelliJSettingsMapper
+import io.github.ceracharlescc.copy4lm.infrastructure.intellij.VirtualFileRef
 import io.github.ceracharlescc.copy4lm.utils.NotificationUtil
 
 
@@ -78,6 +82,35 @@ internal class CopyFileContentService(private val project: Project) {
             )
         )
         copyToClipboardAndNotify(outcome, context.state)
+    }
+
+    fun copyPaths(files: Array<VirtualFile>, absolutePaths: Boolean) {
+        if (files.isEmpty()) return
+        val context = prepareContext(files) ?: return
+        val projectRoot = project.basePath?.let { LocalFileSystem.getInstance().findFileByPath(it) }
+        val useCase = CopyPathsUseCase { file ->
+            if (projectRoot == null) {
+                context.fileGateway.relativePath(file).ifEmpty { "." }
+            } else {
+                VfsUtilCore.getRelativePath((file as VirtualFileRef).virtualFile, projectRoot, '/')
+                    ?.ifEmpty { "." } ?: file.path
+            }
+        }
+        val text = useCase.execute(
+            context.fileRefs,
+            IntelliJSettingsMapper.toPathListOptions(context.state),
+            absolutePaths
+        )
+        val count = context.fileRefs.distinctBy { it.path }.size
+        val message = if (count == 1) "1 path copied." else "$count paths copied."
+        copyToClipboardAndNotify(
+            ClipboardCopyOutcome(
+                text = text,
+                fileLimitReached = false,
+                successNotifications = listOf(NotificationPayload(message, NotificationKind.Information))
+            ),
+            context.state
+        )
     }
 
     private fun prepareContext(files: Array<VirtualFile>): PreparedContext? {

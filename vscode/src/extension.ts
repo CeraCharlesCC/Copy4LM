@@ -5,15 +5,16 @@ import * as c4 from "copy4lm-common";
 
 const api = c4.io.github.ceracharlescc.copy4lm;
 
-const { copyFiles, copyDirectoryStructure } = api;
+const { copyFiles, copyDirectoryStructure, copyPaths } = api;
 type JsLogger = c4.io.github.ceracharlescc.copy4lm.JsLogger;
 type JsFileRef = c4.io.github.ceracharlescc.copy4lm.JsFileRef;
 
 import { VsCodeFileGateway } from './gateway/vscodeFileGateway';
-import { getCopyOptions, getDirectoryStructureOptions } from './ui/settings';
+import { getCopyOptions, getDirectoryStructureOptions, getPathListOptions } from './ui/settings';
 import {
   showCopyResult,
   showDirectoryStructureResult,
+  showPathsCopied,
   showError,
   showFileLimitWarning,
   showNoFilesCopied
@@ -229,11 +230,47 @@ async function copyDirectoryStructureCommand(uri?: vscode.Uri, selectedUris?: vs
   }
 }
 
+async function copyPathsCommand(
+  absolutePaths: boolean,
+  uri?: vscode.Uri,
+  selectedUris?: vscode.Uri[]
+): Promise<void> {
+  const selection = resolveSelectionUris(uri, selectedUris);
+  if (selection.length === 0) {
+    showError('No files or folders selected.');
+    return;
+  }
+
+  try {
+    const fileRefs = selection.map((selected) => {
+      const ref = toFileRef(selected);
+      if (!ref) {
+        throw new Error(`Cannot access selected path: ${selected.fsPath}`);
+      }
+      return ref;
+    });
+    const relativePath = (file: JsFileRef): string => {
+      const folder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(file.path));
+      return folder ? path.relative(folder.uri.fsPath, file.path) || '.' : file.path;
+    };
+    const text = copyPaths(fileRefs, getPathListOptions(), relativePath, absolutePaths);
+    await vscode.env.clipboard.writeText(text);
+    showPathsCopied(fileRefs.length);
+  } catch (error) {
+    getLogger().error('Path list copy failed', String(error));
+    showError('Path list copy failed. See output for details.');
+  }
+}
+
 export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.commands.registerCommand('copy4lm.copySelection', copySelection),
     vscode.commands.registerCommand('copy4lm.copyOpenEditors', copyOpenEditors),
     vscode.commands.registerCommand('copy4lm.copyDirectoryStructure', copyDirectoryStructureCommand),
+    vscode.commands.registerCommand('copy4lm.copyRelativePaths',
+      (uri?: vscode.Uri, selectedUris?: vscode.Uri[]) => copyPathsCommand(false, uri, selectedUris)),
+    vscode.commands.registerCommand('copy4lm.copyAbsolutePaths',
+      (uri?: vscode.Uri, selectedUris?: vscode.Uri[]) => copyPathsCommand(true, uri, selectedUris)),
     vscode.commands.registerCommand('copy4lm.copyCurrentFile', copyCurrentFile),
     {
       dispose() {

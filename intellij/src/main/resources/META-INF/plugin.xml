@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <version>0.3.1</version>
+    <version>0.4.0</version>
 
     <id>io.github.ceracharlescc.copy4lm</id>
     <depends>com.intellij.modules.platform</depends>
@@ -20,6 +20,7 @@
     <h2>Main features:</h2>
     <ul>
         <li>Copy the content of multiple files or directories to the clipboard.</li>
+        <li>Copy selected relative or absolute path lists with customizable start, end, and delimiter text.</li>
         <li>Customizable text structure, including pre-text, file header text, and post-text.</li>
         <li>Configurable file copying constraints (default is 30 files) to prevent memory issues with larger folders.</li>
         <li>Optional file extension filters to specify which files should be copied.</li>
@@ -32,19 +33,11 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.3.0 Changes:</h3>
+        <h3>Version 0.4.0 Changes:</h3>
         <h4>Added</h4>
         <ul>
-        <li>Add support for respecting VCS ignore rules (e.g., `.gitignore`) during file collection (#4)</li>
-        <li>Add timeout for git commands used in ignore rule detection</li>
-        </ul>
-        <h4>Changed</h4>
-        <ul>
-        <li>Update logging messages to reference VCS ignore rules</li>
-        </ul>
-        <h4>Internal</h4>
-        <ul>
-        <li>Refactor build setup to isolate VS Code extension logic in a dedicated Gradle subproject (#3)</li>
+        <li>Add relative and absolute path-list copying for selected files and folders in IntelliJ and VS Code.</li>
+        <li>Add customizable start, end, and delimiter text for path lists.</li>
         </ul>
         ]]>
     </change-notes>
@@ -71,6 +64,12 @@
             parentId="Copy4LMConfigurable"
             displayName="Copy Directory Structure to Clipboard"
             instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyDirectoryStructureConfigurable"/>
+
+        <projectConfigurable
+            id="CopyPathsConfigurable"
+            parentId="Copy4LMConfigurable"
+            displayName="Copy Path List to Clipboard"
+            instance="io.github.ceracharlescc.copy4lm.ui.settings.CopyPathsConfigurable"/>
     </extensions>
     <actions>
         <!-- For general IntelliJ IDEs -->
@@ -91,6 +90,21 @@
                 text="Copy Directory Structure to Clipboard"
                 description="Copy a tree view of selected directories/files to the clipboard.">
             <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyFileContentContentsAction"/>
+        </action>
+
+        <action id="CopyRelativePathsAction"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyRelativePathsAction"
+                text="Copy Relative Path List to Clipboard"
+                description="Copy selected file and folder paths relative to the project root.">
+            <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyDirectoryStructureAction"/>
+            <add-to-group group-id="CopyReferencePopupGroup" anchor="last"/>
+        </action>
+        <action id="CopyAbsolutePathsAction"
+                class="io.github.ceracharlescc.copy4lm.ui.CopyAbsolutePathsAction"
+                text="Copy Absolute Path List to Clipboard"
+                description="Copy selected file and folder absolute paths.">
+            <add-to-group group-id="CutCopyPasteGroup" anchor="after" relative-to-action="CopyRelativePathsAction"/>
+            <add-to-group group-id="CopyReferencePopupGroup" anchor="last"/>
         </action>
 
         <!-- For Rider -->

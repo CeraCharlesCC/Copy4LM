@@ -17,7 +17,8 @@ internal class Copy4LMSettings : PersistentStateComponent<Copy4LMSettings.State>
     data class State(
         var common: CommonState = CommonState(),
         var fileContent: FileContentState = FileContentState(),
-        var directoryStructure: DirectoryStructureState = DirectoryStructureState()
+        var directoryStructure: DirectoryStructureState = DirectoryStructureState(),
+        var pathList: PathListState = PathListState()
     )
 
     data class CommonState(
@@ -42,6 +43,12 @@ internal class Copy4LMSettings : PersistentStateComponent<Copy4LMSettings.State>
     data class DirectoryStructureState(
         var preText: String = CopyDefaults.EMPTY_TEXT,
         var postText: String = CopyDefaults.EMPTY_TEXT
+    )
+
+    data class PathListState(
+        var start: String = CopyDefaults.PATH_LIST_START,
+        var end: String = CopyDefaults.PATH_LIST_END,
+        var delimiter: String = CopyDefaults.PATH_LIST_DELIMITER
     )
 
     private var myState = State()

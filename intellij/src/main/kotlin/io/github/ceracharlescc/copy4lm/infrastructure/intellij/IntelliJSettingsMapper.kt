@@ -4,8 +4,12 @@ import io.github.ceracharlescc.copy4lm.Copy4LMSettings
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
+import io.github.ceracharlescc.copy4lm.domain.vo.PathListOptions
 
 internal object IntelliJSettingsMapper {
+
+    fun toPathListOptions(state: Copy4LMSettings.State): PathListOptions =
+        PathListOptions(state.pathList.start, state.pathList.end, state.pathList.delimiter)
 
     fun toCopyOptions(state: Copy4LMSettings.State, projectName: String): CopyOptions {
         val common = state.common

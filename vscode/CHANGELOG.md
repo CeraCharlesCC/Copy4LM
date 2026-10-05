@@ -1,3 +1,9 @@
+## [0.4.0] - 2026-10-05
+
+### Added
+- Add relative and absolute path-list copying for selected files and folders in IntelliJ and VS Code.
+- Add customizable start, end, and delimiter text for path lists.
+
 ## [0.3.0] - 2026-02-12
 
 ### Added

@@ -7,12 +7,14 @@ import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.application.port.LoggerPort
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyDirectoryStructureUseCase
 import io.github.ceracharlescc.copy4lm.application.usecase.CopyFilesUseCase
+import io.github.ceracharlescc.copy4lm.application.usecase.CopyPathsUseCase
 import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
 import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureResult
+import io.github.ceracharlescc.copy4lm.domain.vo.PathListOptions
 import kotlin.js.JsExport
 
 @JsExport
@@ -122,6 +124,25 @@ fun copyDirectoryStructure(
 @JsExport
 fun buildDirectoryStructure(rootName: String, relativePaths: Array<String>): String =
     DirectoryStructureBuilder.build(rootName = rootName, relativePaths = relativePaths.toList())
+
+@JsExport
+external interface JsPathListOptions {
+    val start: String
+    val end: String
+    val delimiter: String
+}
+
+@JsExport
+fun copyPaths(
+    files: Array<JsFileRef>,
+    options: JsPathListOptions,
+    relativePath: (JsFileRef) -> String,
+    absolutePaths: Boolean
+): String = CopyPathsUseCase { relativePath(it.unwrap()) }.execute(
+    files = files.map { JsFileRefAdapter(it) },
+    options = PathListOptions(options.start, options.end, options.delimiter),
+    absolutePaths = absolutePaths
+)
 
 private fun JsCopyOptions.toCopyOptions(): CopyOptions =
     CopyOptions(

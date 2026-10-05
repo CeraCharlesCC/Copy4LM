@@ -5,6 +5,9 @@ object CopyDefaults {
     const val FOOTER_FORMAT = "```"
     const val FILE_CONTENT_PRE_TEXT = "=====\n\$PROJECT_NAME\n=====\n"
     const val EMPTY_TEXT = ""
+    const val PATH_LIST_START = "["
+    const val PATH_LIST_END = "]"
+    const val PATH_LIST_DELIMITER = ", "
     const val FILE_COUNT_LIMIT = 30
     const val SET_MAX_FILE_COUNT = true
     const val USE_FILENAME_FILTERS = false

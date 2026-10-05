@@ -3,6 +3,7 @@ import * as c4 from 'copy4lm-common';
 
 type JsCopyOptions = c4.io.github.ceracharlescc.copy4lm.JsCopyOptions;
 type JsDirectoryStructureOptions = c4.io.github.ceracharlescc.copy4lm.JsDirectoryStructureOptions;
+type JsPathListOptions = c4.io.github.ceracharlescc.copy4lm.JsPathListOptions;
 
 type CommonOptions = {
   fileCountLimit: number;
@@ -37,6 +38,11 @@ const DEFAULTS = {
   directoryStructure: {
     preText: '',
     postText: ''
+  },
+  pathList: {
+    start: '[',
+    end: ']',
+    delimiter: ', '
   }
 } as const;
 
@@ -94,5 +100,14 @@ export function getDirectoryStructureOptions(projectName: string): JsDirectorySt
     postText: config.get('directoryStructure.postText', DEFAULTS.directoryStructure.postText),
     ...directoryCommon,
     projectName
+  };
+}
+
+export function getPathListOptions(): JsPathListOptions {
+  const config = getConfig();
+  return {
+    start: config.get('pathList.start', DEFAULTS.pathList.start),
+    end: config.get('pathList.end', DEFAULTS.pathList.end),
+    delimiter: config.get('pathList.delimiter', DEFAULTS.pathList.delimiter)
   };
 }

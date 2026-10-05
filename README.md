@@ -12,6 +12,7 @@
 <h2>Main features:</h2>
 <ul>
     <li>Copy the content of multiple files or directories to the clipboard.</li>
+    <li>Copy selected relative or absolute path lists with customizable start, end, and delimiter text.</li>
     <li>Customizable text structure, including pre-text, file header text, and post-text.</li>
     <li>Configurable file copying constraints (default is 30 files) to prevent memory issues with larger folders.</li>
     <li>Optional file extension filters to specify which files should be copied.</li>
