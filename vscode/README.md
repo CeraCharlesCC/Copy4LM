@@ -37,6 +37,16 @@ Copy file contents or directory structure into the clipboard with LLM-friendly f
 - `copy4lm.pathList.end`
 - `copy4lm.pathList.delimiter`
 
+## Install
+
+Download `copy4lm-vscode-X.Y.Z.vsix` from the
+[latest GitHub Release](https://github.com/CeraCharlesCC/Copy4LM/releases/latest).
+In VS Code, open Extensions → … → Install from VSIX and select the file, or run:
+
+```bash
+code --install-extension /path/to/copy4lm-vscode-X.Y.Z.vsix
+```
+
 ## Development
 
 Build the shared Kotlin/JS package first:
@@ -55,3 +65,8 @@ npm test
 npm run build
 npm run package
 ```
+
+From the repository root, `bash scripts/build_vscode.sh` runs the TypeScript checks,
+adapter tests, and packaging with Gradle-managed Node and npm. The VSIX is staged
+in `build/distributions/`. GitHub CI also builds and uploads the VSIX with the
+IntelliJ ZIP in its `plugins` artifact.

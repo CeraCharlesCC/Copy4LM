@@ -1,6 +1,6 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <version>0.4.0</version>
+    <version>0.4.1</version>
 
     <id>io.github.ceracharlescc.copy4lm</id>
     <depends>com.intellij.modules.platform</depends>
@@ -33,11 +33,23 @@
 
     <change-notes>
         <![CDATA[
-        <h3>Version 0.4.0 Changes:</h3>
+        <h3>Version 0.4.1 Changes:</h3>
         <h4>Added</h4>
         <ul>
-        <li>Add relative and absolute path-list copying for selected files and folders in IntelliJ and VS Code.</li>
-        <li>Add customizable start, end, and delimiter text for path lists.</li>
+        <li>Include relative and absolute path-list copying with customizable separators from 0.4.0.</li>
+        </ul>
+        <h4>Fixed</h4>
+        <ul>
+        <li>Fix VS Code clipboard results by exporting shared Kotlin result models to JavaScript.</li>
+        <li>Respect Git ignore rules when collecting files in VS Code, including nested repositories.</li>
+        <li>Improve file collection limits, cancellation, and handling of unreadable files.</li>
+        <li>Preserve expected blank lines when clipboard header and footer templates are empty.</li>
+        </ul>
+        <h4>Internal</h4>
+        <ul>
+        <li>Test and package both IDE extensions in GitHub Actions with shared Gradle caching.</li>
+        <li>Validate version files and packaged manifests before publishing ZIP and VSIX assets.</li>
+        <li>Make LLM release notes optional, with a fallback to the committed changelog.</li>
         </ul>
         ]]>
     </change-notes>

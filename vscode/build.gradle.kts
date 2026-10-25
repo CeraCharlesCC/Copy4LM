@@ -103,10 +103,14 @@ val vscodePackage = tasks.register<NpmTask>("vscodePackage") {
     inputs.files(vscodeDir.file("package.json"), vscodeDir.file("README.md"),
         vscodeDir.file("CHANGELOG.md"), vscodeDir.file("LICENSE"), vscodeDir.file(".vscodeignore"))
 
-    // vsce writes a *.vsix into the vscode/ folder by default
-    outputs.files(fileTree(vscodeDir) { include("*.vsix") })
-
-    npmCommand.set(listOf("run", "package")) // package.json: "package": "vsce package"
+    val vsix = layout.buildDirectory.file(
+        "distributions/copy4lm-vscode-${providers.gradleProperty("pluginVersion").get()}.vsix"
+    )
+    outputs.file(vsix)
+    doFirst {
+        vsix.get().asFile.parentFile.mkdirs()
+    }
+    npmCommand.set(listOf("run", "package", "--", "--out", vsix.get().asFile.absolutePath))
 }
 
 // Clean VS Code artifacts on ./gradlew clean

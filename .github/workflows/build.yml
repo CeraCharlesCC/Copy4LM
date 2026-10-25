@@ -1,0 +1,80 @@
+name: Build plugins
+
+on:
+  workflow_call:
+    inputs:
+      releaseTag:
+        description: Optional release tag that must match every version file
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Validate release metadata and tooling
+        env:
+          RELEASE_TAG: ${{ inputs.releaseTag }}
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_*.py'
+          if [ -n "$RELEASE_TAG" ]; then
+            python3 scripts/release.py check --tag "$RELEASE_TAG"
+          else
+            python3 scripts/release.py check
+          fi
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # One cache owner, shared by CI and Release. Keep compiled task outputs;
+      # do not run clean before building. PRs can restore but cannot save.
+      - uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+          cache-read-only: ${{ github.event_name == 'pull_request' || github.ref != 'refs/heads/main' }}
+          cache-cleanup: on-success
+          gradle-home-cache-includes: |
+            caches
+            notifications
+            wrapper/dists
+
+      - name: Test and package both plugins
+        run: ./gradlew --no-daemon --build-cache test buildPlugin
+
+      - name: Verify packaged versions and contents
+        run: |
+          python3 scripts/release.py verify-artifacts build/distributions
+          cd build/distributions
+          sha256sum *.zip *.vsix > SHA256SUMS
+
+      - name: Upload installable plugins and checksums
+        uses: actions/upload-artifact@v7
+        with:
+          name: plugins
+          path: |
+            build/distributions/*.zip
+            build/distributions/*.vsix
+            build/distributions/SHA256SUMS
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-reports
+          path: |
+            common/build/reports/tests/
+            common/build/test-results/
+            intellij/build/reports/tests/
+            intellij/build/test-results/
+          if-no-files-found: ignore
+          retention-days: 7

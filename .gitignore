@@ -56,3 +56,5 @@ vscode/.gradle
 !README.md
 !settings.gradle.kts
 !requirements.txt
+
+**/__pycache__/

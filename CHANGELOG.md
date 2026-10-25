@@ -1,3 +1,19 @@
+## [0.4.1] - 2026-10-25
+
+### Added
+- Include relative and absolute path-list copying with customizable separators from 0.4.0.
+
+### Fixed
+- Fix VS Code clipboard results by exporting shared Kotlin result models to JavaScript.
+- Respect Git ignore rules when collecting files in VS Code, including nested repositories.
+- Improve file collection limits, cancellation, and handling of unreadable files.
+- Preserve expected blank lines when clipboard header and footer templates are empty.
+
+### Internal
+- Test and package both IDE extensions in GitHub Actions with shared Gradle caching.
+- Validate version files and packaged manifests before publishing ZIP and VSIX assets.
+- Make LLM release notes optional, with a fallback to the committed changelog.
+
 ## [0.4.0] - 2026-10-05
 
 ### Added

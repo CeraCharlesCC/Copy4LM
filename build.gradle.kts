@@ -53,7 +53,7 @@ val stageIntellijZip = tasks.register<Copy>("stageIntellijZip") {
 
     dependsOn(":intellij:buildPlugin")
     from(layout.projectDirectory.dir("intellij/build/distributions")) {
-        include("*.zip")
+        include("copy4lm-intellij-${providers.gradleProperty("pluginVersion").get()}.zip")
     }
     into(layout.buildDirectory.dir("distributions"))
 }
@@ -63,8 +63,8 @@ val stageVscodeVsix = tasks.register<Copy>("stageVscodeVsix") {
     description = "Stages the VS Code extension .vsix into build/distributions."
 
     dependsOn(":vscode:vscodePackage")
-    from(layout.projectDirectory.dir("vscode")) {
-        include("*.vsix")
+    from(project(":vscode").layout.buildDirectory.dir("distributions")) {
+        include("copy4lm-vscode-${providers.gradleProperty("pluginVersion").get()}.vsix")
     }
     into(layout.buildDirectory.dir("distributions"))
 }
