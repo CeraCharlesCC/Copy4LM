@@ -5,7 +5,7 @@
 
 ### Fixed
 - Fix VS Code clipboard results by exporting shared Kotlin result models to JavaScript.
-- Respect Git ignore rules when collecting files in VS Code, including nested repositories.
+- Respect nested Git ignore rules and multiple workspace roots when collecting files in VS Code.
 - Improve file collection limits, cancellation, and handling of unreadable files.
 - Preserve expected blank lines when clipboard header and footer templates are empty.
 

@@ -5,6 +5,7 @@ test/**
 esbuild.config.mjs
 tsconfig.json
 .gradle/**
+build/**
 node_modules/**
 *.vsix
 build.gradle.kts
