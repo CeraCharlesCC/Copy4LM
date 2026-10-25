@@ -1,5 +1,7 @@
 package io.github.ceracharlescc.copy4lm.application.interactor
 
+import io.github.ceracharlescc.copy4lm.application.port.FileGateway
+import io.github.ceracharlescc.copy4lm.application.port.FileRef
 import io.github.ceracharlescc.copy4lm.domain.vo.FileCollectionOptions
 import io.github.ceracharlescc.copy4lm.testsupport.CapturingLogger
 import io.github.ceracharlescc.copy4lm.testsupport.FakeFileGateway
@@ -280,5 +282,78 @@ internal class FileCollectorTest {
         assertTrue(collected.fileLimitReached)
         assertEquals(2, collected.files.size)
         assertEquals(listOf("src/A.kt", "src/B.kt"), collected.relativePaths)
+    }
+
+    @Test
+    fun `collector reuse does not retain paths or the previous limit flag`() {
+        val a = FakeFileRef("A.kt", "/repo/A.kt")
+        val b = FakeFileRef("B.kt", "/repo/B.kt")
+        val collector = FileCollector(FakeFileGateway(), CapturingLogger(),
+            FileCollectionOptions(fileCountLimit = 1))
+
+        assertTrue(collector.collect(listOf(a, b)).fileLimitReached)
+        val second = collector.collect(listOf(a))
+        assertEquals(listOf("A.kt"), second.relativePaths)
+        assertFalse(second.fileLimitReached)
+    }
+
+    @Test
+    fun `overlapping selections only traverse and probe each path once`() {
+        val dir = FakeFileRef("src", "/repo/src", isDirectory = true)
+        val a = FakeFileRef("A.kt", "/repo/src/A.kt")
+        val gateway = FakeFileGateway(children = mapOf(dir.path to listOf(a)))
+        val collector = FileCollector(gateway, CapturingLogger(), FileCollectionOptions(setMaxFileCount = false))
+
+        val result = collector.collect(listOf(dir, dir, a))
+
+        assertEquals(listOf("src/A.kt"), result.relativePaths)
+        assertEquals(listOf(dir.path), gateway.childrenCalls)
+        assertEquals(listOf(a.path), gateway.binaryCalls)
+    }
+
+    @Test
+    fun `distinct physical paths with matching display paths are both collected`() {
+        val a = FakeFileRef("A.kt", "/one/A.kt")
+        val b = FakeFileRef("A.kt", "/two/A.kt")
+        val gateway = object : FileGateway by FakeFileGateway() {
+            override fun relativePath(file: FileRef) = file.name
+        }
+        val result = FileCollector(gateway, CapturingLogger(), FileCollectionOptions(setMaxFileCount = false))
+            .collect(listOf(a, b))
+
+        assertEquals(listOf(a, b), result.files.map { it.fileRef })
+    }
+
+    @Test
+    fun `deep and cyclic directory graphs do not overflow the stack or repeat traversal`() {
+        val depth = 10000
+        val leaf = FakeFileRef("A.kt", "/repo/A.kt")
+        fun directory(index: Int) = FakeFileRef("$index", "/repo/$index", isDirectory = true)
+        var visits = 0
+        val gateway = object : FileGateway by FakeFileGateway() {
+            override fun childrenOf(dir: FileRef): List<FileRef> {
+                visits++
+                val index = dir.name.toInt()
+                return if (index == depth) listOf(leaf) else listOf(dir, directory(index + 1))
+            }
+        }
+        val result = FileCollector(gateway, CapturingLogger(), FileCollectionOptions(setMaxFileCount = false))
+            .collect(listOf(directory(0)))
+
+        assertEquals(listOf("A.kt"), result.relativePaths)
+        assertEquals(depth + 1, visits)
+    }
+
+    @Test
+    fun `oversized and ignored files are rejected before binary probing`() {
+        val large = FakeFileRef("large.kt", "/repo/large.kt")
+        val ignored = FakeFileRef("ignored.kt", "/repo/ignored.kt")
+        val gateway = FakeFileGateway(sizesBytes = mapOf(large.path to 1025L),
+            ignoredPaths = setOf(ignored.path))
+        val result = FileCollector(gateway, CapturingLogger(), FileCollectionOptions(maxFileSizeKB = 1))
+            .collect(listOf(large, ignored))
+
+        assertTrue(result.files.isEmpty())
+        assertTrue(gateway.binaryCalls.isEmpty())
     }
 }

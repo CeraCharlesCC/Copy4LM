@@ -11,7 +11,6 @@ import io.github.ceracharlescc.copy4lm.application.usecase.CopyPathsUseCase
 import io.github.ceracharlescc.copy4lm.domain.service.DirectoryStructureBuilder
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.CopyResult
-import io.github.ceracharlescc.copy4lm.domain.vo.CopyStats
 import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureOptions
 import io.github.ceracharlescc.copy4lm.domain.vo.DirectoryStructureResult
 import io.github.ceracharlescc.copy4lm.domain.vo.PathListOptions
@@ -58,23 +57,6 @@ external interface JsCopyOptions {
 }
 
 @JsExport
-data class JsCopyStats(
-    val totalChars: Int,
-    val totalLines: Int,
-    val totalWords: Int,
-    val totalTokens: Int
-)
-
-@JsExport
-data class JsCopyResult(
-    val clipboardText: String,
-    val copiedFileCount: Int,
-    val failedFileCount: Int,
-    val stats: JsCopyStats,
-    val fileLimitReached: Boolean
-)
-
-@JsExport
 external interface JsDirectoryStructureOptions {
     val preText: String
     val postText: String
@@ -88,24 +70,16 @@ external interface JsDirectoryStructureOptions {
 }
 
 @JsExport
-data class JsDirectoryStructureResult(
-    val clipboardText: String,
-    val collectedFileCount: Int,
-    val fileLimitReached: Boolean
-)
-
-@JsExport
 fun copyFiles(
     files: Array<JsFileRef>,
     options: JsCopyOptions,
     gateway: JsFileGateway,
     logger: JsLogger? = null
-): JsCopyResult {
+): CopyResult {
     val fileGateway = JsFileGatewayAdapter(gateway)
     val loggerPort = logger?.let { JsLoggerAdapter(it) } ?: NoopLogger
     val useCase = CopyFilesUseCase(fileGateway, loggerPort)
-    val result = useCase.execute(files.map { JsFileRefAdapter(it) }, options.toCopyOptions())
-    return result.toJsCopyResult()
+    return useCase.execute(files.map { JsFileRefAdapter(it) }, options.toCopyOptions())
 }
 
 @JsExport
@@ -114,11 +88,11 @@ fun copyDirectoryStructure(
     options: JsDirectoryStructureOptions,
     gateway: JsFileGateway,
     logger: JsLogger? = null
-): JsDirectoryStructureResult {
+): DirectoryStructureResult {
     val fileGateway = JsFileGatewayAdapter(gateway)
     val loggerPort = logger?.let { JsLoggerAdapter(it) } ?: NoopLogger
     val useCase = CopyDirectoryStructureUseCase(fileGateway, loggerPort)
-    return useCase.execute(files.map { JsFileRefAdapter(it) }, options.toDirectoryStructureOptions()).toJsDirectoryStructureResult()
+    return useCase.execute(files.map { JsFileRefAdapter(it) }, options.toDirectoryStructureOptions())
 }
 
 @JsExport
@@ -161,23 +135,6 @@ private fun JsCopyOptions.toCopyOptions(): CopyOptions =
         projectName = projectName
     )
 
-private fun CopyResult.toJsCopyResult(): JsCopyResult =
-    JsCopyResult(
-        clipboardText = clipboardText,
-        copiedFileCount = copiedFileCount,
-        failedFileCount = failedFileCount,
-        stats = stats.toJsCopyStats(),
-        fileLimitReached = fileLimitReached
-    )
-
-private fun CopyStats.toJsCopyStats(): JsCopyStats =
-    JsCopyStats(
-        totalChars = totalChars,
-        totalLines = totalLines,
-        totalWords = totalWords,
-        totalTokens = totalTokens
-    )
-
 private fun JsDirectoryStructureOptions.toDirectoryStructureOptions(): DirectoryStructureOptions =
     DirectoryStructureOptions(
         preText = preText,
@@ -189,13 +146,6 @@ private fun JsDirectoryStructureOptions.toDirectoryStructureOptions(): Directory
         maxFileSizeKB = maxFileSizeKB,
         respectGitIgnore = respectGitIgnore,
         projectName = projectName
-    )
-
-private fun DirectoryStructureResult.toJsDirectoryStructureResult(): JsDirectoryStructureResult =
-    JsDirectoryStructureResult(
-        clipboardText = clipboardText,
-        collectedFileCount = collectedFileCount,
-        fileLimitReached = fileLimitReached
     )
 
 private object NoopLogger : LoggerPort {

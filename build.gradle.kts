@@ -3,6 +3,8 @@ import org.gradle.api.tasks.wrapper.Wrapper
 
 plugins {
     base
+    alias(libs.plugins.kotlin) apply false
+    alias(libs.plugins.kotlinMultiplatform) apply false
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,4 +84,15 @@ tasks.register("buildPlugin") {
 // Wire into the root lifecycle
 tasks.named("assemble") {
     dependsOn("buildPlugin")
+}
+
+// One verification entry point for both IDEs and the multiplatform core.
+val test = tasks.register("test") {
+    group = "verification"
+    description = "Runs the common JVM tests, IntelliJ tests, and VS Code checks."
+    dependsOn(":common:jvmTest", ":intellij:test", ":vscode:vscodeTest", ":vscode:vscodeTypecheck")
+}
+
+tasks.named("check") {
+    dependsOn(test)
 }

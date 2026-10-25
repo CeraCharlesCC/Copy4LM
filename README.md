@@ -22,3 +22,24 @@
 <h2>Credits</h2>
 <p>This plugin is based on mwguerra's copy-file-content (under MIT License) plugin, available at: <a href="https://github.com/mwguerra/copy-file-content/">here</a>. Thank you mwguerra for the inspiration and foundation!</p>
 <!-- Plugin description end -->
+
+
+## Development
+
+```bash
+# Shared JVM regression tests, IntelliJ compilation/tests, VS Code tests and TypeScript checks
+./gradlew test
+
+# Package both IDE extensions into build/distributions
+./gradlew buildPlugin
+```
+
+The common module uses Kotlin/JS `generateTypeScriptDefinitions()`. Result models
+(`CopyResult`, `CopyStats`, `DirectoryStructureResult`) are exported directly with
+`@JsExport`; their JavaScript implementation and `.d.ts` declarations come from the
+same Kotlin definitions. There is no separate result DTO or source generator to keep
+in sync. See [Kotlin/JS TypeScript generation](https://kotlinlang.org/docs/js-project-setup.html#generation-of-typescript-declaration-files-d-ts).
+
+`JsFacade.kt` retains the boundary adapters for plain JavaScript options/arrays,
+file gateways and numeric file sizes. After changing the common module, Gradle's
+VS Code build also rebuilds the bundle when the generated Kotlin/JS package changes.

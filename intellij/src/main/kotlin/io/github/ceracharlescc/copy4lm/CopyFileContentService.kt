@@ -3,6 +3,7 @@ package io.github.ceracharlescc.copy4lm
 import com.intellij.notification.NotificationType
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ProjectRootManager
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -116,7 +117,9 @@ internal class CopyFileContentService(private val project: Project) {
     private fun prepareContext(files: Array<VirtualFile>): PreparedContext? {
         val state = try {
             Copy4LMSettings.getInstance(project).state
-        } catch (_: Throwable) {
+        } catch (cancelled: ProcessCanceledException) {
+            throw cancelled
+        } catch (_: Exception) {
             NotificationUtil.show(project, "Failed to load settings.", NotificationType.ERROR)
             return null
         }

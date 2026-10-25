@@ -56,5 +56,7 @@ jobs:
         with:
           name: test-reports
           path: |
-            build/reports/tests/test
-            build/test-results/test
+            common/build/reports/tests/jvmTest
+            common/build/test-results/jvmTest
+            intellij/build/reports/tests/test
+            intellij/build/test-results/test

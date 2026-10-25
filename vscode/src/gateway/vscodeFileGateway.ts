@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import * as c4 from "copy4lm-common";
+import type * as c4 from "copy4lm-common";
 
 type JsLogger = c4.io.github.ceracharlescc.copy4lm.JsLogger;
 type JsFileRef = c4.io.github.ceracharlescc.copy4lm.JsFileRef;
@@ -36,19 +36,24 @@ export class VsCodeFileGateway implements JsFileGateway {
   private readonly gitIgnoreDisabledRoots = new Set<string>();
   private readonly gitIgnoreErrorLoggedRoots = new Set<string>();
   private readonly gitIgnoreInfoLoggedRoots = new Set<string>();
+  private documentsByPath: Map<string, vscode.TextDocument> | undefined;
+  private openPaths: Set<string> | undefined;
+  private binaryProbe: Buffer | undefined;
 
-  constructor(logger?: JsLogger) {
+  constructor(logger?: JsLogger, private readonly respectGitIgnore = true) {
     this.logger = logger;
   }
 
   childrenOf(dir: JsFileRef): JsFileRef[] {
     try {
       const entries = fs.readdirSync(dir.path, { withFileTypes: true });
-      return entries.map((entry) => ({
+      const children = entries.map((entry) => ({
         name: entry.name,
         path: path.join(dir.path, entry.name),
         isDirectory: entry.isDirectory()
       }));
+      this.prepareGitIgnore(children);
+      return children;
     } catch (error) {
       this.logger?.error(`Failed to list children for ${dir.path}`, String(error));
       return [];
@@ -57,9 +62,11 @@ export class VsCodeFileGateway implements JsFileGateway {
 
   readText(file: JsFileRef, strictMemoryRead: boolean): string | null {
     try {
-      const document = vscode.workspace.textDocuments.find((doc) =>
-        normalizeForCompare(doc.uri.fsPath) === normalizeForCompare(file.path)
-      );
+      // A gateway is scoped to one synchronous copy operation.
+      this.documentsByPath ??= new Map(vscode.workspace.textDocuments.map((doc) =>
+        [normalizeForCompare(doc.uri.fsPath), doc]
+      ));
+      const document = this.documentsByPath.get(normalizeForCompare(file.path));
 
       if (!strictMemoryRead && document) {
         return document.getText();
@@ -79,15 +86,13 @@ export class VsCodeFileGateway implements JsFileGateway {
   isBinary(file: JsFileRef): boolean {
     try {
       const fd = fs.openSync(file.path, 'r');
-      const buffer = Buffer.alloc(BINARY_PROBE_BYTES);
-      const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
-      fs.closeSync(fd);
-      for (let i = 0; i < bytesRead; i += 1) {
-        if (buffer[i] === 0) {
-          return true;
-        }
+      try {
+        const buffer = this.binaryProbe ??= Buffer.allocUnsafe(BINARY_PROBE_BYTES);
+        const bytesRead = fs.readSync(fd, buffer, 0, buffer.length, 0);
+        return buffer.subarray(0, bytesRead).includes(0);
+      } finally {
+        fs.closeSync(fd);
       }
-      return false;
     } catch (error) {
       this.logger?.error(`Failed to detect binary file ${file.path}`, String(error));
       return false;
@@ -121,91 +126,87 @@ export class VsCodeFileGateway implements JsFileGateway {
   }
 
   isGitIgnored(file: JsFileRef): boolean {
-    const cacheKey = normalizeForCompare(file.path);
-    const cached = this.gitIgnoreCache.get(cacheKey);
-    if (cached !== undefined) {
-      return cached;
+    const key = normalizeForCompare(file.path);
+    const cached = this.gitIgnoreCache.get(key);
+    if (cached !== undefined) return cached;
+    this.prepareGitIgnore([file]);
+    return this.gitIgnoreCache.get(key) ?? false;
+  }
+
+  /** Batch selections and directory entries, preserving Git's tracked-file/negation semantics. */
+  prepareGitIgnore(files: readonly JsFileRef[]): void {
+    if (!this.respectGitIgnore) return;
+
+    const batches = new Map<string, { root: string; paths: Map<string, string> }>();
+    for (const file of files) {
+      const cacheKey = normalizeForCompare(file.path);
+      if (this.gitIgnoreCache.has(cacheKey)) continue;
+      const workspaceFolder = vscode.workspace.getWorkspaceFolder(vscode.Uri.file(file.path))
+        ?? vscode.workspace.workspaceFolders?.[0];
+      this.gitIgnoreCache.set(cacheKey, false);
+      if (!workspaceFolder) continue;
+
+      const root = workspaceFolder.uri.fsPath;
+      const rootKey = normalizeForCompare(root);
+      if (!vscode.workspace.isTrusted) {
+        this.logGitIgnoreInfoOnce(root,
+          'Workspace is untrusted; skipping VCS ignore evaluation and including files.');
+        continue;
+      }
+      if (this.gitIgnoreDisabledRoots.has(rootKey)) continue;
+
+      const relative = path.relative(root, file.path);
+      if (relative === '..' || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) continue;
+      let batch = batches.get(rootKey);
+      if (!batch) {
+        batch = { root, paths: new Map() };
+        batches.set(rootKey, batch);
+      }
+      batch.paths.set(cacheKey, toPosixPath(relative || '.'));
     }
 
-    const ignored = this.resolveGitIgnore(file);
-    this.gitIgnoreCache.set(cacheKey, ignored);
-    return ignored;
+    for (const [rootKey, { root, paths }] of batches) {
+      // NUL delimiters handle whitespace, newlines and option-like filenames literally.
+      const input = [...paths.values()].join('\0') + '\0';
+      const result = spawnSync('git', ['check-ignore', '--stdin', '-z'], {
+        cwd: root,
+        windowsHide: true,
+        timeout: GIT_TIMEOUT_MS,
+        input,
+        encoding: 'utf8',
+        maxBuffer: Math.max(1024 * 1024, Buffer.byteLength(input) + 65536)
+      });
+      if (!result.error && (result.status === 0 || result.status === 1)) {
+        const ignored = new Set(result.stdout.split('\0'));
+        for (const [cacheKey, relative] of paths) {
+          this.gitIgnoreCache.set(cacheKey, ignored.has(relative));
+        }
+        continue;
+      }
+
+      this.gitIgnoreDisabledRoots.add(rootKey);
+      const expectedDetail = this.resolveExpectedGitFallbackDetail(result);
+      if (expectedDetail) {
+        this.logGitIgnoreInfoOnce(root,
+          'VCS ignore evaluation unavailable for this workspace root; including files.', expectedDetail);
+      } else {
+        const detail = result.error?.message || result.stderr?.trim() || `Exit code: ${String(result.status)}`;
+        this.logGitIgnoreErrorOnce(root, detail);
+      }
+    }
   }
 
   private isFileOpen(filePath: string): boolean {
-    const normalized = normalizeForCompare(filePath);
-    for (const group of vscode.window.tabGroups.all) {
-      for (const tab of group.tabs) {
-        const uri = getTabUri(tab);
-        if (uri && normalizeForCompare(uri.fsPath) === normalized) {
-          return true;
+    if (!this.openPaths) {
+      this.openPaths = new Set();
+      for (const group of vscode.window.tabGroups.all) {
+        for (const tab of group.tabs) {
+          const uri = getTabUri(tab);
+          if (uri) this.openPaths.add(normalizeForCompare(uri.fsPath));
         }
       }
     }
-    return false;
-  }
-
-  private resolveGitIgnore(file: JsFileRef): boolean {
-    const fileUri = vscode.Uri.file(file.path);
-    const workspaceFolder = vscode.workspace.getWorkspaceFolder(fileUri)
-      ?? vscode.workspace.workspaceFolders?.[0];
-
-    if (!workspaceFolder) {
-      return false;
-    }
-
-    const workspaceRoot = workspaceFolder.uri.fsPath;
-    const workspaceKey = normalizeForCompare(workspaceRoot);
-
-    if (!vscode.workspace.isTrusted) {
-      this.logGitIgnoreInfoOnce(
-        workspaceRoot,
-        'Workspace is untrusted; skipping VCS ignore evaluation and including files.'
-      );
-      return false;
-    }
-
-    if (this.gitIgnoreDisabledRoots.has(workspaceKey)) {
-      return false;
-    }
-
-    const relativePath = path.relative(workspaceRoot, file.path);
-    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
-      return false;
-    }
-
-    const pathForGit = toPosixPath(relativePath || '.');
-    const result = spawnSync(
-      'git',
-      ['check-ignore', '--quiet', '--', pathForGit],
-      { cwd: workspaceRoot, windowsHide: true, timeout: GIT_TIMEOUT_MS }
-    );
-
-    if (result.status === 0) {
-      return true;
-    }
-
-    if (result.status === 1) {
-      return false;
-    }
-
-    const expectedFallbackDetail = this.resolveExpectedGitFallbackDetail(result);
-    if (expectedFallbackDetail) {
-      this.gitIgnoreDisabledRoots.add(workspaceKey);
-      this.logGitIgnoreInfoOnce(
-        workspaceRoot,
-        'VCS ignore evaluation unavailable for this workspace root; including files.',
-        expectedFallbackDetail
-      );
-      return false;
-    }
-
-    this.gitIgnoreDisabledRoots.add(workspaceKey);
-    const detail = result.error?.message
-      ?? result.stderr?.toString().trim()
-      ?? `Exit code: ${String(result.status)}`;
-    this.logGitIgnoreErrorOnce(workspaceRoot, detail);
-    return false;
+    return this.openPaths.has(normalizeForCompare(filePath));
   }
 
   private resolveExpectedGitFallbackDetail(result: ReturnType<typeof spawnSync>): string | undefined {

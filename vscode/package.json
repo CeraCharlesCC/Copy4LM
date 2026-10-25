@@ -237,7 +237,8 @@
     "build": "node esbuild.config.mjs",
     "watch": "node esbuild.config.mjs --watch",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build && node --test test/*.test.cjs",
+    "test": "npm run build && npm run test:unit",
+    "test:unit": "node --test test/*.test.cjs",
     "package": "vsce package"
   },
   "devDependencies": {

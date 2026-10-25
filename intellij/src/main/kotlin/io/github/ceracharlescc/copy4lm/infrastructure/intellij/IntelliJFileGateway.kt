@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileTypes.FileTypeManager
+import com.intellij.openapi.progress.ProcessCanceledException
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vcs.changes.ChangeListManager
 import com.intellij.openapi.vfs.VfsUtilCore
@@ -50,8 +51,10 @@ internal class IntelliJFileGateway(
                 if (isOpen) cached ?: diskText()
                 else diskText()
             }
-        } catch (t: Throwable) {
-            logger.error("Failed to read file contents for ${vf.path}: ${t.message}", t)
+        } catch (cancelled: ProcessCanceledException) {
+            throw cancelled
+        } catch (error: Exception) {
+            logger.warn("Failed to read file contents for ${vf.path}: ${error.message}", error)
             null
         }
     }
@@ -80,10 +83,12 @@ internal class IntelliJFileGateway(
     override fun isGitIgnored(file: FileRef): Boolean {
         val vf = (file as VirtualFileRef).virtualFile
         return gitIgnoreCache.getOrPut(vf) {
-            runCatching {
+            try {
                 ChangeListManager.getInstance(project).isIgnoredFile(vf)
-            }.getOrElse { throwable ->
-                logger.warn("Failed to resolve VCS ignore status for ${vf.path}: ${throwable.message}", throwable)
+            } catch (cancelled: ProcessCanceledException) {
+                throw cancelled
+            } catch (error: Exception) {
+                logger.warn("Failed to resolve VCS ignore status for ${vf.path}: ${error.message}", error)
                 false
             }
         }

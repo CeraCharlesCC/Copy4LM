@@ -5,31 +5,27 @@ internal class ClipboardTextBuilder(
     private val postText: String,
     private val addExtraLineBetweenFiles: Boolean
 ) {
-    private val parts = mutableListOf<String>()
+    private val text = StringBuilder()
+    private var partCount = 0
     private var fileCount = 0
 
-    fun addFile(header: String, content: String, footer: String = "") {
-        if (fileCount == 0 && preText.isNotEmpty()) {
-            parts.add(preText)
-        }
-        parts.add(header)
-        parts.add(content)
-        if (footer.isNotEmpty()) {
-            parts.add(footer)
-        }
-        fileCount++
-
-        if (addExtraLineBetweenFiles && content.isNotEmpty()) {
-            parts.add("")
-        }
+    private fun appendPart(part: String) {
+        if (partCount++ > 0) text.append('\n')
+        text.append(part)
     }
 
-    fun build(): String {
-        if (fileCount == 0) return ""
+    fun addFile(header: String, content: String, footer: String = "") {
+        if (fileCount == 0 && preText.isNotEmpty()) appendPart(preText)
+        appendPart(header)
+        appendPart(content)
+        if (footer.isNotEmpty()) appendPart(footer)
+        fileCount++
+        if (addExtraLineBetweenFiles && content.isNotEmpty()) appendPart("")
+    }
 
-        if (postText.isNotEmpty()) {
-            parts.add(postText)
-        }
-        return parts.joinToString(separator = "\n")
+    fun build(): String = when {
+        fileCount == 0 -> ""
+        postText.isEmpty() -> text.toString()
+        else -> "$text\n$postText"
     }
 }

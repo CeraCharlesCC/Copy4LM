@@ -1,10 +1,11 @@
+@file:OptIn(kotlin.js.ExperimentalJsExport::class)
+
 package io.github.ceracharlescc.copy4lm.domain.vo
 
-import io.github.ceracharlescc.copy4lm.domain.service.TokenEstimator
+import kotlin.js.JsExport
 
-/**
- * Tracks statistics about copied file content.
- */
+/** Tracks statistics about copied file content without allocating a list of words. */
+@JsExport
 data class CopyStats(
     val totalChars: Int = 0,
     val totalLines: Int = 0,
@@ -12,16 +13,29 @@ data class CopyStats(
     val totalTokens: Int = 0
 ) {
     fun plus(content: String): CopyStats {
-        val chars = content.length
-        val lines = if (content.isEmpty()) 0 else content.count { it == '\n' } + 1
-        val words = content.split(Regex("\\s+")).count { it.isNotBlank() }
-        val tokens = TokenEstimator.estimate(content)
+        var lines = if (content.isEmpty()) 0 else 1
+        var words = 0
+        var punctuation = 0
+        var inWord = false
 
-        return copy(
-            totalChars = totalChars + chars,
+        for (char in content) {
+            if (char == '\n') lines++
+            if (char.isWhitespace()) {
+                inWord = false
+            } else if (!inWord) {
+                words++
+                inWord = true
+            }
+            when (char) {
+                ';', '{', '}', '(', ')', '[', ']', ',' -> punctuation++
+            }
+        }
+
+        return CopyStats(
+            totalChars = totalChars + content.length,
             totalLines = totalLines + lines,
             totalWords = totalWords + words,
-            totalTokens = totalTokens + tokens
+            totalTokens = totalTokens + words + punctuation
         )
     }
 }

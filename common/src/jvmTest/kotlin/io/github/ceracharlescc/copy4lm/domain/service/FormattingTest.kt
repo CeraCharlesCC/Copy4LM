@@ -111,4 +111,16 @@ internal class FormattingTest {
         )
         assertEquals($$"Project: MyProject; File: $FILE_PATH\n", result)
     }
+
+    @Test
+    fun `clipboard builder preserves empty headers and blank lines and builds without mutation`() {
+        val builder = ClipboardTextBuilder("PRE", "POST", addExtraLineBetweenFiles = true)
+        builder.addFile("", "first", "")
+        builder.addFile("H", "", "F")
+        val expected = "PRE\n\nfirst\n\nH\n\nF\nPOST"
+        assertEquals(expected, builder.build())
+        assertEquals(expected, builder.build())
+        builder.addFile("H2", "last", "F2")
+        assertEquals("PRE\n\nfirst\n\nH\n\nF\nH2\nlast\nF2\n\nPOST", builder.build())
+    }
 }

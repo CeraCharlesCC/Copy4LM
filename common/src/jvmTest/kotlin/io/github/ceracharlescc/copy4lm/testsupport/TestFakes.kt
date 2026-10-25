@@ -23,8 +23,13 @@ internal class FakeFileGateway(
     /** Records (path, strictMemoryRead) to assert strictMemoryRead is passed correctly. */
     val readCalls: MutableList<Pair<String, Boolean>> = mutableListOf()
 
-    override fun childrenOf(dir: FileRef): List<FileRef> =
-        children[dir.path].orEmpty()
+    val childrenCalls = mutableListOf<String>()
+    val binaryCalls = mutableListOf<String>()
+
+    override fun childrenOf(dir: FileRef): List<FileRef> {
+        childrenCalls += dir.path
+        return children[dir.path].orEmpty()
+    }
 
     override fun readText(file: FileRef, strictMemoryRead: Boolean): String? {
         readCalls += (file.path to strictMemoryRead)
@@ -34,8 +39,10 @@ internal class FakeFileGateway(
         return contents[file.path].orEmpty()
     }
 
-    override fun isBinary(file: FileRef): Boolean =
-        file.path in binaryPaths
+    override fun isBinary(file: FileRef): Boolean {
+        binaryCalls += file.path
+        return file.path in binaryPaths
+    }
 
     override fun sizeBytes(file: FileRef): Long =
         sizesBytes[file.path]

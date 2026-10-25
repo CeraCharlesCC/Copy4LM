@@ -68,10 +68,29 @@ val vscodeBuild = tasks.register<NpmTask>("vscodeBuild") {
     inputs.file(vscodeDir.file("esbuild.config.mjs"))
     inputs.file(vscodeDir.file("tsconfig.json"))
     inputs.dir(vscodeDir.dir("src"))
+    inputs.dir(project(":common").layout.buildDirectory.dir("dist/js/productionLibrary"))
     // output is dist/extension.js per esbuild config
     outputs.dir(vscodeDir.dir("dist"))
 
     npmCommand.set(listOf("run", "build")) // package.json: "build": "node esbuild.config.mjs"
+}
+
+val vscodeTypecheck = tasks.register<NpmTask>("vscodeTypecheck") {
+    group = "verification"
+    description = "Type-checks the VS Code adapter against the generated Kotlin/JS declarations."
+    dependsOn(npmInstall)
+    npmCommand.set(listOf("run", "typecheck"))
+}
+
+val vscodeTest = tasks.register<NpmTask>("vscodeTest") {
+    group = "verification"
+    description = "Runs VS Code adapter regression tests."
+    dependsOn(vscodeBuild)
+    npmCommand.set(listOf("run", "test:unit"))
+}
+
+tasks.named("check") {
+    dependsOn(vscodeTypecheck, vscodeTest)
 }
 
 val vscodePackage = tasks.register<NpmTask>("vscodePackage") {
@@ -79,6 +98,10 @@ val vscodePackage = tasks.register<NpmTask>("vscodePackage") {
     description = "Packages the VS Code extension (.vsix) (npm run package)."
 
     dependsOn(vscodeBuild)
+
+    inputs.dir(vscodeDir.dir("dist"))
+    inputs.files(vscodeDir.file("package.json"), vscodeDir.file("README.md"),
+        vscodeDir.file("CHANGELOG.md"), vscodeDir.file("LICENSE"), vscodeDir.file(".vscodeignore"))
 
     // vsce writes a *.vsix into the vscode/ folder by default
     outputs.files(fileTree(vscodeDir) { include("*.vsix") })

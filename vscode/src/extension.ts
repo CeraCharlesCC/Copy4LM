@@ -153,9 +153,10 @@ async function copySelection(uri?: vscode.Uri, selectedUris?: vscode.Uri[]): Pro
   }
 
   const logger = getLogger();
-  const gateway = new VsCodeFileGateway(logger);
+  const gateway = new VsCodeFileGateway(logger, options.respectGitIgnore);
 
   try {
+    gateway.prepareGitIgnore(fileRefs);
     const result = copyFiles(fileRefs, options, gateway, logger);
     if (result.copiedFileCount === 0) {
       const noOpMessage = result.failedFileCount > 0
@@ -215,9 +216,10 @@ async function copyDirectoryStructureCommand(uri?: vscode.Uri, selectedUris?: vs
   }
 
   const logger = getLogger();
-  const gateway = new VsCodeFileGateway(logger);
+  const gateway = new VsCodeFileGateway(logger, options.respectGitIgnore);
 
   try {
+    gateway.prepareGitIgnore(fileRefs);
     const result = copyDirectoryStructure(fileRefs, options, gateway, logger);
     await vscode.env.clipboard.writeText(result.clipboardText);
     showDirectoryStructureResult(result);
